@@ -18,11 +18,13 @@ const container = document.getElementById('testimonialContainer');
 const prevBtn = document.getElementById('prevReview');
 const nextBtn = document.getElementById('nextReview');
 
+// Card width + gap (min-width is 400px, gap is 1.5rem approx 24px)
+const scrollAmount = 424; 
+
 nextBtn.addEventListener('click', () => {
-    // Scroll by the width of one card + gap (approx 424px)
-    container.scrollBy({ left: 424, behavior: 'smooth' });
+    container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
 });
 
 prevBtn.addEventListener('click', () => {
-    container.scrollBy({ left: -424, behavior: 'smooth' });
+    container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
 });
