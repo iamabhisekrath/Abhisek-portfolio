@@ -13,6 +13,44 @@
     <!-- Link to your custom CSS file -->
     <link rel="stylesheet" href="style.css">
 
+    <style>
+        /* Custom Utilities */
+.text-stroke {
+    -webkit-text-stroke: 1px #000;
+    color: transparent;
+}
+.grayscale-img {
+    filter: grayscale(100%);
+    transition: filter 0.3s ease;
+}
+.grayscale-img:hover {
+    filter: grayscale(0%);
+}
+/* Hide scrollbar for cleaner look */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #39FF14;
+}
+/* Hide scrollbar specifically for the slider to keep it clean */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+    </style>
+
     <script>
         tailwind.config = {
             theme: {
