@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abhisek - Product Designer Portfolio</title>
+    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+    <link href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)" rel="stylesheet">
+    <link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
+    <link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+    <link href="[https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap)" rel="stylesheet">
+    
+    <!-- Link to your custom CSS file -->
+    <link rel="stylesheet" href="style.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Manrope', 'sans-serif'],
+                    },
+                    colors: {
+                        neon: '#39FF14', // Bright Lime Green
+                        dark: '#0a0a0a',
+                        gray: {
+                            light: '#f4f4f5',
+                            medium: '#e4e4e7',
+                        }
+                    },
+                    animation: {
+                        'spin-slow': 'spin 12s linear infinite',
+                        'marquee': 'marquee 25s linear infinite',
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-100%)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-white text-dark font-sans antialiased overflow-x-hidden">
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-2">
+                    <div class="w-8 h-8 bg-neon rounded-full flex items-center justify-center">
+                        <span class="font-bold text-black">A</span>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight">Abhisek<span class="text-gray-400">.</span></span>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-6 lg:space-x-8">
+                    <a href="#home" class="text-sm font-semibold hover:text-neon transition">Home</a>
+                    <a href="#services" class="text-sm font-semibold hover:text-neon transition">Services</a>
+                    <a href="#about" class="text-sm font-semibold hover:text-neon transition">About</a>
+                    <a href="#projects" class="text-sm font-semibold hover:text-neon transition">Projects</a>
+                    <a href="#process" class="text-sm font-semibold hover:text-neon transition">Process</a>
+                    <a href="#testimonials" class="text-sm font-semibold hover:text-neon transition">Reviews</a>
+                    <a href="#contact-form" class="px-6 py-2.5 bg-black text-white text-sm font-bold rounded-full hover:bg-neon hover:text-black transition-all duration-300">Let's Talk</a>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-black hover:text-neon focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu Panel -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 absolute w-full z-40">
+            <div class="px-4 pt-2 pb-6 space-y-1 shadow-lg">
+                <a href="#home" class="block px-3 py-3 text-base font-medium hover:bg-gray-50 hover:text-neon">Home</a>
+                <a href="#services" class="block px-3 py-3 text-base font-medium hover:bg-gray-50 hover:text-neon">Services</a>
+                <a href="#about" class="block px-3 py-3 text-base font-medium hover:bg-gray-50 hover:text-neon">About</a>
+                <a href="#projects" class="block px-3 py-3 text-base font-medium hover:bg-gray-50 hover:text-neon">Projects</a>
+                <a href="#process" class="block px-3 py-3 text-base font-medium hover:bg-gray-50 hover:text-neon">Process</a>
+                <a href="#testimonials" class="block px-3 py-3 text-base font-medium hover:bg-gray-50 hover:text-neon">Testimonials</a>
+                <a href="#contact-form" class="block px-3 py-3 text-base font-bold text-neon">Let's Talk</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                
+                <!-- Text Content -->
+                <div class="relative z-10 order-2 lg:order-1 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full mb-6">
+                        <span class="w-2 h-2 bg-neon rounded-full animate-pulse"></span>
+                        <span class="text-xs font-bold uppercase tracking-wide">Hello There!</span>
+                    </div>
+                    
+                    <h1 class="text-5xl lg:text-7xl font-extrabold leading-tight mb-6">
+                        I'm Abhisek,<br>
+                        <span class="relative inline-block">
+                            Product Designer
+                            <svg class="absolute w-full h-3 -bottom-1 left-0 text-neon -z-10" viewBox="0 0 100 10" preserveAspectRatio="none">
+                                <path d="M0 5 Q 50 10 100 5" stroke="currentColor" stroke-width="8" fill="none" />
+                            </svg>
+                        </span>
+                        <br> based in India.
+                    </h1>
+                    
+                    <p class="text-gray-500 text-lg mb-10 max-w-lg mx-auto lg:mx-0">
+                        I'm an experienced Product Designer with 10+ years in the field, collaborating with various companies and startups to build amazing digital products.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <a href="#contact-form" class="px-8 py-4 bg-neon text-black font-bold rounded-full shadow-[0_10px_20px_rgba(57,255,20,0.3)] hover:shadow-none hover:translate-y-1 transition-all duration-300">
+                            View My Work
+                        </a>
+                        <a href="#" class="px-8 py-4 border-2 border-gray-200 text-black font-bold rounded-full hover:border-black transition-all duration-300 flex items-center justify-center gap-2">
+                            Download CV <i class="fas fa-download text-sm"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Image/Visual -->
+                <div class="relative order-1 lg:order-2 flex justify-center">
+                    <!-- Green Blob Background -->
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] lg:w-[500px] lg:h-[500px] bg-neon rounded-full opacity-100"></div>
+                    
+                    <!-- Main Image with corrected frame -->
+                    <div class="relative z-10">
+                        <img src="[https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80](https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80)" 
+                             alt="Abhisek" 
+                             class="grayscale-img w-[350px] lg:w-[450px] drop-shadow-2xl rounded-[2.5rem] border-4 border-white">
+                        
+                        <!-- Floating Badges -->
+                        <div class="absolute top-20 -left-4 bg-black text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-bounce duration-1000">
+                            Product Designer
+                        </div>
+                        <div class="absolute bottom-20 -right-4 bg-white text-black px-4 py-2 rounded-full text-sm font-bold shadow-lg flex items-center gap-2">
+                            <span class="w-3 h-3 bg-neon rounded-full"></span> UI/UX Designer
+                        </div>
+
+                        <!-- Spinning Badge -->
+                        <div class="absolute -top-10 -right-10 w-32 h-32 hidden md:block">
+                            <div class="relative w-full h-full animate-spin-slow">
+                                <svg viewBox="0 0 100 100" width="100" height="100">
+                                <defs>
+                                    <path id="circle" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0"/>
+                                </defs>
+                                <text font-size="11" font-weight="bold">
+                                    <textPath xlink:href="#circle" class="fill-black tracking-widest uppercase">
+                                    • Hire Me Now • Hire Me Now 
+                                    </textPath>
+                                </text>
+                                </svg>
+                            </div>
+                            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-neon w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold">
+                                <i class="fas fa-arrow-right -rotate-45"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Infinite Marquee -->
+    <div class="bg-neon py-4 overflow-hidden rotate-1 transform shadow-lg border-y-4 border-black/5">
+        <div class="flex animate-marquee whitespace-nowrap">
+            <span class="text-xl md:text-3xl font-extrabold text-black mx-4 uppercase tracking-wider flex items-center gap-4">
+                Web Design <i class="fas fa-asterisk text-sm"></i> App Design <i class="fas fa-asterisk text-sm"></i> Dashboard <i class="fas fa-asterisk text-sm"></i> Wireframe <i class="fas fa-asterisk text-sm"></i> User Research <i class="fas fa-asterisk text-sm"></i> Prototyping <i class="fas fa-asterisk text-sm"></i>
+            </span>
+             <span class="text-xl md:text-3xl font-extrabold text-black mx-4 uppercase tracking-wider flex items-center gap-4">
+                Web Design <i class="fas fa-asterisk text-sm"></i> App Design <i class="fas fa-asterisk text-sm"></i> Dashboard <i class="fas fa-asterisk text-sm"></i> Wireframe <i class="fas fa-asterisk text-sm"></i> User Research <i class="fas fa-asterisk text-sm"></i> Prototyping <i class="fas fa-asterisk text-sm"></i>
+            </span>
+        </div>
+    </div>
+
+    <!-- Services Section -->
+    <section id="services" class="py-24 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16">
+                <div>
+                    <div class="text-neon font-bold uppercase tracking-widest mb-2 flex items-center gap-2">
+                        <span class="w-8 h-[2px] bg-neon"></span> My Specialization
+                    </div>
+                    <h2 class="text-4xl md:text-5xl font-extrabold">Services I Provide</h2>
+                </div>
+                <a href="#" class="hidden md:inline-block px-6 py-3 bg-neon text-black font-bold rounded-full hover:bg-black hover:text-white transition-colors duration-300 mt-4 md:mt-0">
+                    View All Services
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+                <!-- Service Card 1 -->
+                <div class="bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border-l-4 border-transparent hover:border-neon group">
+                    <div class="w-14 h-14 bg-black text-white rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:bg-neon group-hover:text-black transition-colors">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3">UI/UX Design</h3>
+                    <p class="text-gray-500 mb-6 leading-relaxed">Create intuitive and visually appealing interfaces that users love to interact with, focusing on seamless journeys.</p>
+                    <a href="#" class="font-bold flex items-center gap-2 group-hover:gap-3 transition-all">Learn more <i class="fas fa-arrow-right text-neon"></i></a>
+                </div>
+
+                <!-- Service Card 2 -->
+                <div class="bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border-l-4 border-transparent hover:border-neon group">
+                    <div class="w-14 h-14 bg-black text-white rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:bg-neon group-hover:text-black transition-colors">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3">App Design</h3>
+                    <p class="text-gray-500 mb-6 leading-relaxed">Designing functional mobile applications for iOS and Android that provide exceptional user experiences.</p>
+                    <a href="#" class="font-bold flex items-center gap-2 group-hover:gap-3 transition-all">Learn more <i class="fas fa-arrow-right text-neon"></i></a>
+                </div>
+
+                <!-- Service Card 3 -->
+                <div class="bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border-l-4 border-transparent hover:border-neon group">
+                    <div class="w-14 h-14 bg-black text-white rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:bg-neon group-hover:text-black transition-colors">
+                        <i class="fas fa-desktop"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3">Website Design</h3>
+                    <p class="text-gray-500 mb-6 leading-relaxed">Building responsive, fast, and modern websites tailored to your brand identity and business goals.</p>
+                    <a href="#" class="font-bold flex items-center gap-2 group-hover:gap-3 transition-all">Learn more <i class="fas fa-arrow-right text-neon"></i></a>
+                </div>
+
+                <!-- Service Card 4 -->
+                <div class="bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border-l-4 border-transparent hover:border-neon group">
+                    <div class="w-14 h-14 bg-black text-white rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:bg-neon group-hover:text-black transition-colors">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3">Web Development</h3>
+                    <p class="text-gray-500 mb-6 leading-relaxed">Expert development using WordPress, Framer, and modern Frontend technologies to build dynamic sites.</p>
+                    <a href="#" class="font-bold flex items-center gap-2 group-hover:gap-3 transition-all">Learn more <i class="fas fa-arrow-right text-neon"></i></a>
+                </div>
+            </div>
+            
+             <div class="mt-10 text-center md:hidden">
+                <a href="#" class="inline-block px-6 py-3 bg-neon text-black font-bold rounded-full">View All Services</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 bg-white overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                
+                <!-- Image Side -->
+                <div class="relative flex justify-center lg:justify-end">
+                     <!-- Background Circle -->
+                    <div class="w-[350px] h-[350px] lg:w-[450px] lg:h-[450px] bg-neon rounded-full absolute top-4 lg:right-10 -z-0"></div>
+                    
+                    <div class="relative z-10">
+                        <img src="[https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80](https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80)" 
+                             alt="About Abhisek" 
+                             class="grayscale-img w-[300px] h-[300px] lg:w-[400px] lg:h-[400px] object-cover rounded-full border-4 border-white shadow-2xl">
+                        
+                        <!-- Floating Pills around image -->
+                        <span class="absolute top-0 right-0 lg:-right-4 bg-black text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-lg">UX/UI Design</span>
+                        <span class="absolute bottom-10 -left-6 lg:-left-10 bg-white text-black px-4 py-1.5 rounded-full text-xs font-bold shadow-lg border border-gray-100">Mobile App Design</span>
+                        <span class="absolute top-1/2 -right-8 lg:-right-12 bg-white text-black px-4 py-1.5 rounded-full text-xs font-bold shadow-lg border border-gray-100">Prototype</span>
+                        <span class="absolute bottom-0 right-10 bg-neon text-black px-4 py-1.5 rounded-full text-xs font-bold shadow-lg">Design System</span>
+                    </div>
+                </div>
+
+                <!-- Text Side -->
+                <div>
+                    <div class="text-neon font-bold uppercase tracking-widest mb-2 flex items-center gap-2">
+                        <span class="w-8 h-[2px] bg-neon"></span> About Me
+                    </div>
+                    <h2 class="text-4xl md:text-5xl font-extrabold mb-6">Who is <span class="text-neon">Abhisek?</span></h2>
+                    <p class="text-gray-500 text-lg mb-8 leading-relaxed">
+                        I am a passionate product designer based in India with a keen eye for detail. I specialize in transforming complex problems into simple, beautiful, and intuitive designs. My work bridges the gap between user needs and business goals.
+                    </p>
+
+                    <!-- Stats -->
+                    <div class="grid grid-cols-3 gap-4 mb-10 border-b border-gray-100 pb-10">
+                        <div>
+                            <h4 class="text-3xl font-extrabold text-neon">20+</h4>
+                            <p class="text-sm font-semibold text-gray-600">Projects Completed</p>
+                        </div>
+                         <div>
+                            <h4 class="text-3xl font-extrabold text-neon">5+</h4>
+                            <p class="text-sm font-semibold text-gray-600">Industries Covered</p>
+                        </div>
+                         <div>
+                            <h4 class="text-3xl font-extrabold text-neon">2+</h4>
+                            <p class="text-sm font-semibold text-gray-600">Years Experience</p>
+                        </div>
+                    </div>
+
+                    <a href="#" class="px-8 py-4 bg-neon text-black font-bold rounded-full shadow-lg hover:bg-black hover:text-white transition-all duration-300">
+                        Download CV
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-24 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-white border border-gray-200 rounded-full mb-4">
+                        <span class="w-2 h-2 bg-neon rounded-full"></span>
+                        <span class="text-xs font-bold uppercase tracking-wide">My Portfolio</span>
+                    </div>
+                    <h2 class="text-4xl md:text-5xl font-extrabold mb-2">Selected <span class="text-stroke text-black/10">Works</span></h2>
+                    <p class="text-gray-500 max-w-lg">A showcase of my recent digital products, featuring modern UI/UX and clean code.</p>
+                </div>
+                <div class="hidden md:flex gap-4">
+                    <button class="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center hover:bg-black hover:border-black hover:text-white transition-all"><i class="fas fa-arrow-left"></i></button>
+                    <button class="w-12 h-12 rounded-full bg-neon border border-neon flex items-center justify-center hover:bg-black hover:border-black hover:text-white transition-all"><i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-12">
+                
+                <!-- Project 1 -->
+                <div class="group cursor-pointer">
+                    <div class="relative overflow-hidden rounded-3xl mb-6 bg-white shadow-sm border-4 border-white">
+                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center">
+                            <span class="px-6 py-3 bg-neon text-black font-bold rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">View Project</span>
+                        </div>
+                        <img src="[https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80](https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80)" 
+                             alt="Fintech Dashboard" 
+                             class="w-full h-64 md:h-[350px] object-cover transform group-hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-2xl font-bold mb-2 group-hover:text-neon transition-colors">Fintech Dashboard</h3>
+                            <p class="text-gray-500">React • Tailwind • Chart.js</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center group-hover:bg-black group-hover:text-white group-hover:border-black transition-all">
+                            <i class="fas fa-arrow-right -rotate-45"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="group cursor-pointer md:translate-y-16">
+                    <div class="relative overflow-hidden rounded-3xl mb-6 bg-white shadow-sm border-4 border-white">
+                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center">
+                            <span class="px-6 py-3 bg-neon text-black font-bold rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">View Project</span>
+                        </div>
+                        <img src="[https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80](https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80)" 
+                             alt="Analytics App" 
+                             class="w-full h-64 md:h-[350px] object-cover transform group-hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-2xl font-bold mb-2 group-hover:text-neon transition-colors">Analytics Platform</h3>
+                            <p class="text-gray-500">Vue.js • D3.js • SaaS</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center group-hover:bg-black group-hover:text-white group-hover:border-black transition-all">
+                            <i class="fas fa-arrow-right -rotate-45"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="group cursor-pointer">
+                    <div class="relative overflow-hidden rounded-3xl mb-6 bg-white shadow-sm border-4 border-white">
+                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center">
+                            <span class="px-6 py-3 bg-neon text-black font-bold rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">View Project</span>
+                        </div>
+                        <img src="[https://images.unsplash.com/photo-1555421689-492a1880ce49?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80](https://images.unsplash.com/photo-1555421689-492a1880ce49?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80)" 
+                             alt="Mobile App" 
+                             class="w-full h-64 md:h-[350px] object-cover transform group-hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-2xl font-bold mb-2 group-hover:text-neon transition-colors">Travel Mobile App</h3>
+                            <p class="text-gray-500">React Native • Figma • iOS</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center group-hover:bg-black group-hover:text-white group-hover:border-black transition-all">
+                            <i class="fas fa-arrow-right -rotate-45"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 4 -->
+                <div class="group cursor-pointer md:translate-y-16">
+                    <div class="relative overflow-hidden rounded-3xl mb-6 bg-white shadow-sm border-4 border-white">
+                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center">
+                            <span class="px-6 py-3 bg-neon text-black font-bold rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">View Project</span>
+                        </div>
+                        <img src="[https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80](https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80)" 
+                             alt="Corporate Website" 
+                             class="w-full h-64 md:h-[350px] object-cover transform group-hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-2xl font-bold mb-2 group-hover:text-neon transition-colors">Agency Portfolio</h3>
+                            <p class="text-gray-500">WordPress • GSAP • Frontend</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center group-hover:bg-black group-hover:text-white group-hover:border-black transition-all">
+                            <i class="fas fa-arrow-right -rotate-45"></i>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+             <div class="mt-20 text-center">
+                <a href="#" class="inline-block px-10 py-4 border-2 border-black text-black font-bold rounded-full hover:bg-black hover:text-white transition-all duration-300">
+                    View All Projects
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW SECTION: Process -->
+    <section id="process" class="py-24 bg-white border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-extrabold mb-4">How I <span class="text-neon">Work</span></h2>
+                <p class="text-gray-500 max-w-xl mx-auto">My streamlined process ensures high-quality results delivered on time, every time.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Step 1 -->
+                <div class="relative p-6 rounded-2xl border border-gray-100 bg-gray-50/50 hover:bg-white hover:shadow-xl transition-all duration-300">
+                    <span class="absolute -top-4 -left-4 w-10 h-10 bg-black text-white rounded-full flex items-center justify-center font-bold border-4 border-white">01</span>
+                    <div class="mb-4 text-neon text-3xl"><i class="fas fa-lightbulb"></i></div>
+                    <h3 class="text-xl font-bold mb-2">Discovery</h3>
+                    <p class="text-gray-500 text-sm">We discuss your goals, target audience, and requirements to build a solid foundation.</p>
+                </div>
+                 <!-- Step 2 -->
+                 <div class="relative p-6 rounded-2xl border border-gray-100 bg-gray-50/50 hover:bg-white hover:shadow-xl transition-all duration-300">
+                    <span class="absolute -top-4 -left-4 w-10 h-10 bg-black text-white rounded-full flex items-center justify-center font-bold border-4 border-white">02</span>
+                    <div class="mb-4 text-neon text-3xl"><i class="fas fa-pencil-ruler"></i></div>
+                    <h3 class="text-xl font-bold mb-2">Design</h3>
+                    <p class="text-gray-500 text-sm">I create wireframes and high-fidelity mockups, iterating until the visual style is perfect.</p>
+                </div>
+                 <!-- Step 3 -->
+                 <div class="relative p-6 rounded-2xl border border-gray-100 bg-gray-50/50 hover:bg-white hover:shadow-xl transition-all duration-300">
+                    <span class="absolute -top-4 -left-4 w-10 h-10 bg-black text-white rounded-full flex items-center justify-center font-bold border-4 border-white">03</span>
+                    <div class="mb-4 text-neon text-3xl"><i class="fas fa-code"></i></div>
+                    <h3 class="text-xl font-bold mb-2">Development</h3>
+                    <p class="text-gray-500 text-sm">Turning designs into functional, responsive, and clean code using modern tech stacks.</p>
+                </div>
+                 <!-- Step 4 -->
+                 <div class="relative p-6 rounded-2xl border border-gray-100 bg-gray-50/50 hover:bg-white hover:shadow-xl transition-all duration-300">
+                    <span class="absolute -top-4 -left-4 w-10 h-10 bg-black text-white rounded-full flex items-center justify-center font-bold border-4 border-white">04</span>
+                    <div class="mb-4 text-neon text-3xl"><i class="fas fa-rocket"></i></div>
+                    <h3 class="text-xl font-bold mb-2">Launch</h3>
+                    <p class="text-gray-500 text-sm">Final testing, optimization, and deployment. I ensure everything runs smoothly.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tools Section -->
+    <section id="tools" class="py-24 bg-white">
+         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                 <div class="inline-flex items-center gap-2 px-3 py-1 bg-white border border-gray-200 rounded-full mb-4">
+                    <span class="w-2 h-2 bg-neon rounded-full"></span>
+                    <span class="text-xs font-bold uppercase tracking-wide">My Skills</span>
+                </div>
+                <h2 class="text-4xl md:text-5xl font-extrabold mb-4">Tech Stack &<br>Development Tools</h2>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Skill 1: HTML -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-4 hover:-translate-y-1 transition-transform border border-gray-100">
+                    <div class="w-12 h-12 flex items-center justify-center bg-gray-50 rounded-lg text-2xl">
+                        <i class="fab fa-html5 text-orange-600"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between mb-1">
+                            <h4 class="font-bold">HTML5</h4>
+                            <span class="text-xs font-bold bg-neon/20 px-2 py-0.5 rounded text-black">98%</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-1.5">
+                            <div class="bg-neon h-1.5 rounded-full" style="width: 98%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skill 2: CSS -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-4 hover:-translate-y-1 transition-transform border border-gray-100">
+                    <div class="w-12 h-12 flex items-center justify-center bg-gray-50 rounded-lg text-2xl">
+                        <i class="fab fa-css3-alt text-blue-600"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between mb-1">
+                            <h4 class="font-bold">CSS3</h4>
+                            <span class="text-xs font-bold bg-neon/20 px-2 py-0.5 rounded text-black">95%</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-1.5">
+                            <div class="bg-neon h-1.5 rounded-full" style="width: 95%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Skill 3: JavaScript -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-4 hover:-translate-y-1 transition-transform border border-gray-100">
+                    <div class="w-12 h-12 flex items-center justify-center bg-gray-50 rounded-lg text-2xl">
+                       <i class="fab fa-js text-yellow-500"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between mb-1">
+                            <h4 class="font-bold">JavaScript</h4>
+                            <span class="text-xs font-bold bg-neon/20 px-2 py-0.5 rounded text-black">90%</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-1.5">
+                            <div class="bg-neon h-1.5 rounded-full" style="width: 90%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Skill 4: React JS -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-4 hover:-translate-y-1 transition-transform border border-gray-100">
+                    <div class="w-12 h-12 flex items-center justify-center bg-gray-50 rounded-lg text-2xl">
+                        <i class="fab fa-react text-blue-400"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between mb-1">
+                            <h4 class="font-bold">React JS</h4>
+                            <span class="text-xs font-bold bg-neon/20 px-2 py-0.5 rounded text-black">88%</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-1.5">
+                            <div class="bg-neon h-1.5 rounded-full" style="width: 88%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Skill 5: Angular -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-4 hover:-translate-y-1 transition-transform border border-gray-100">
+                    <div class="w-12 h-12 flex items-center justify-center bg-gray-50 rounded-lg text-2xl">
+                        <i class="fab fa-angular text-red-600"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between mb-1">
+                            <h4 class="font-bold">Angular</h4>
+                            <span class="text-xs font-bold bg-neon/20 px-2 py-0.5 rounded text-black">82%</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-1.5">
+                            <div class="bg-neon h-1.5 rounded-full" style="width: 82%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Skill 6: WordPress -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-4 hover:-translate-y-1 transition-transform border border-gray-100">
+                    <div class="w-12 h-12 flex items-center justify-center bg-gray-50 rounded-lg text-2xl">
+                        <i class="fab fa-wordpress text-blue-700"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between mb-1">
+                            <h4 class="font-bold">WordPress</h4>
+                            <span class="text-xs font-bold bg-neon/20 px-2 py-0.5 rounded text-black">94%</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-1.5">
+                            <div class="bg-neon h-1.5 rounded-full" style="width: 94%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Skill 7: Framer -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-4 hover:-translate-y-1 transition-transform border border-gray-100">
+                    <div class="w-12 h-12 flex items-center justify-center bg-gray-50 rounded-lg text-2xl">
+                        <svg class="w-6 h-6 text-black" viewBox="0 0 24 24" fill="currentColor" xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)">
+                            <path d="M4 0h16v8h-8zM4 8h8l8 8h-16zM4 16h8v8z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between mb-1">
+                            <h4 class="font-bold">Framer</h4>
+                            <span class="text-xs font-bold bg-neon/20 px-2 py-0.5 rounded text-black">89%</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-1.5">
+                            <div class="bg-neon h-1.5 rounded-full" style="width: 89%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Design Tools Sub-section -->
+            <div class="text-center mt-20 mb-12">
+                <h3 class="text-3xl md:text-4xl font-extrabold">Design Tools</h3>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Design Tool 1: Figma -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-4 hover:-translate-y-1 transition-transform border border-gray-100">
+                    <div class="w-12 h-12 flex items-center justify-center bg-gray-50 rounded-lg text-2xl">
+                        <i class="fab fa-figma text-purple-500"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between mb-1">
+                            <h4 class="font-bold">Figma</h4>
+                            <span class="text-xs font-bold bg-neon/20 px-2 py-0.5 rounded text-black">96%</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-1.5">
+                            <div class="bg-neon h-1.5 rounded-full" style="width: 96%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Design Tool 2: Adobe Illustrator -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-4 hover:-translate-y-1 transition-transform border border-gray-100">
+                    <div class="w-12 h-12 flex items-center justify-center bg-gray-50 rounded-lg text-2xl">
+                        <span class="font-bold text-orange-600 text-sm border-2 border-orange-600 p-1">Ai</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between mb-1">
+                            <h4 class="font-bold">Illustrator</h4>
+                            <span class="text-xs font-bold bg-neon/20 px-2 py-0.5 rounded text-black">92%</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-1.5">
+                            <div class="bg-neon h-1.5 rounded-full" style="width: 92%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Design Tool 3: Sketchbook -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-4 hover:-translate-y-1 transition-transform border border-gray-100">
+                    <div class="w-12 h-12 flex items-center justify-center bg-gray-50 rounded-lg text-2xl">
+                        <i class="fas fa-pencil-alt text-red-500"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between mb-1">
+                            <h4 class="font-bold">Sketchbook</h4>
+                            <span class="text-xs font-bold bg-neon/20 px-2 py-0.5 rounded text-black">88%</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-1.5">
+                            <div class="bg-neon h-1.5 rounded-full" style="width: 88%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Design Tool 4: Affinity -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-4 hover:-translate-y-1 transition-transform border border-gray-100">
+                    <div class="w-12 h-12 flex items-center justify-center bg-gray-50 rounded-lg text-2xl">
+                         <span class="font-bold text-indigo-600 text-sm border-2 border-indigo-600 p-1">Af</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between mb-1">
+                            <h4 class="font-bold">Affinity</h4>
+                            <span class="text-xs font-bold bg-neon/20 px-2 py-0.5 rounded text-black">85%</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-1.5">
+                            <div class="bg-neon h-1.5 rounded-full" style="width: 85%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+         </div>
+    </section>
+
+    <!-- NEW SECTION: Testimonials Slider -->
+    <section id="testimonials" class="py-24 bg-gray-50 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-end mb-16">
+                <div>
+                     <div class="inline-flex items-center gap-2 px-3 py-1 bg-white border border-gray-200 rounded-full mb-4">
+                        <span class="w-2 h-2 bg-neon rounded-full"></span>
+                        <span class="text-xs font-bold uppercase tracking-wide">Testimonials</span>
+                    </div>
+                    <h2 class="text-4xl md:text-5xl font-extrabold mb-4">What Clients <span class="text-stroke text-black/10">Say</span></h2>
+                </div>
+                
+                <!-- Navigation Arrows -->
+                <div class="flex gap-4">
+                    <button id="prevReview" class="w-12 h-12 rounded-full border border-gray-300 flex items-center justify-center hover:bg-black hover:border-black hover:text-white transition-all">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <button id="nextReview" class="w-12 h-12 rounded-full bg-neon border border-neon flex items-center justify-center hover:bg-black hover:border-black hover:text-white transition-all">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Slider Container -->
+            <!-- We use flex + overflow-x-auto to create the horizontal scroll -->
+            <!-- snap-x aligns items when scrolling stops -->
+            <div id="testimonialContainer" class="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-10 no-scrollbar">
+                
+                <!-- Review 1 -->
+                <div class="min-w-[300px] md:min-w-[400px] snap-center bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
+                    <div class="flex text-yellow-400 mb-4">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <p class="text-gray-600 mb-6 italic">"Abhisek transformed our vague ideas into a stunning, high-converting landing page. His attention to detail is unmatched in the industry."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-xl font-bold">J</div>
+                        <div>
+                            <h5 class="font-bold text-sm">James Carter</h5>
+                            <p class="text-xs text-gray-500">CEO, TechFlow</p>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Review 2 -->
+                 <div class="min-w-[300px] md:min-w-[400px] snap-center bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
+                    <div class="flex text-yellow-400 mb-4">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <p class="text-gray-600 mb-6 italic">"Professional, fast, and incredibly creative. The mobile app UI he designed for us increased our user retention by 40% in just two months."</p>
+                    <div class="flex items-center gap-4">
+                       <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-xl font-bold">S</div>
+                        <div>
+                            <h5 class="font-bold text-sm">Sarah Jenkins</h5>
+                            <p class="text-xs text-gray-500">Founder, GreenLife</p>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Review 3 -->
+                 <div class="min-w-[300px] md:min-w-[400px] snap-center bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
+                    <div class="flex text-yellow-400 mb-4">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <p class="text-gray-600 mb-6 italic">"Working with Abhisek was a breeze. He understood our brand identity perfectly and delivered a website that exceeded our expectations."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-xl font-bold">M</div>
+                        <div>
+                            <h5 class="font-bold text-sm">Michael Ross</h5>
+                            <p class="text-xs text-gray-500">Marketing Dir, Apex</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review 4 (Placeholder for future) -->
+                 <div class="min-w-[300px] md:min-w-[400px] snap-center bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
+                    <div class="flex text-yellow-400 mb-4">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <p class="text-gray-600 mb-6 italic">"The best developer we have worked with. Clean code, great communication, and delivered ahead of schedule."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-xl font-bold">D</div>
+                        <div>
+                            <h5 class="font-bold text-sm">David Kim</h5>
+                            <p class="text-xs text-gray-500">CTO, StartUp Inc</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW SECTION: Contact Form -->
+    <section id="contact-form" class="py-24 bg-white relative overflow-hidden">
+        <div class="absolute -right-20 top-20 w-96 h-96 bg-neon/10 rounded-full blur-3xl"></div>
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="bg-black text-white rounded-[3rem] p-8 md:p-16 shadow-2xl overflow-hidden relative">
+                <!-- Decorative Circle -->
+                <div class="absolute top-0 right-0 w-64 h-64 bg-neon opacity-20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2"></div>
+                
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl md:text-5xl font-extrabold mb-4">Have a project in mind?</h2>
+                    <p class="text-gray-400">Fill out the form below and I'll get back to you within 24 hours.</p>
+                </div>
+
+                <form class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold mb-2 ml-2">Name</label>
+                            <input type="text" placeholder="John Doe" class="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl focus:outline-none focus:border-neon focus:bg-white/20 transition-all placeholder-gray-500 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-2 ml-2">Email</label>
+                            <input type="email" placeholder="john@example.com" class="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl focus:outline-none focus:border-neon focus:bg-white/20 transition-all placeholder-gray-500 text-white">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-2 ml-2">Subject</label>
+                         <select class="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl focus:outline-none focus:border-neon focus:bg-white/20 transition-all text-white">
+                            <option class="text-black">General Inquiry</option>
+                            <option class="text-black">Web Design Project</option>
+                            <option class="text-black">App Development</option>
+                            <option class="text-black">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-2 ml-2">Message</label>
+                        <textarea rows="4" placeholder="Tell me about your project..." class="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl focus:outline-none focus:border-neon focus:bg-white/20 transition-all placeholder-gray-500 text-white"></textarea>
+                    </div>
+                    <div class="text-center">
+                        <button type="button" class="px-10 py-4 bg-neon text-black font-bold rounded-full hover:scale-105 transition-transform duration-300 w-full md:w-auto">
+                            Send Message <i class="fas fa-paper-plane ml-2"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black text-white pt-10 pb-10 border-t border-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+             <a href="mailto:hello@abhisek.com" class="inline-block px-10 py-5 bg-neon text-black font-bold rounded-full text-xl hover:scale-105 transition-transform mb-10">
+                hello@abhisek.com
+            </a>
+            
+            <div class="flex justify-center gap-6 mb-12">
+                <a href="#" class="w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center hover:bg-neon hover:border-neon hover:text-black transition-all">
+                    <i class="fab fa-dribbble"></i>
+                </a>
+                <a href="#" class="w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center hover:bg-neon hover:border-neon hover:text-black transition-all">
+                    <i class="fab fa-behance"></i>
+                </a>
+                <a href="#" class="w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center hover:bg-neon hover:border-neon hover:text-black transition-all">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+                <a href="#" class="w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center hover:bg-neon hover:border-neon hover:text-black transition-all">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
+                <p>&copy; 2025 Abhisek. All rights reserved.</p>
+                <div class="flex gap-6">
+                    <a href="#" class="hover:text-white">Privacy Policy</a>
+                    <a href="#" class="hover:text-white">Terms of Conditions</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
