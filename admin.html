@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Portfolio Management</title>
+    <title>Admin Workspace - Portfolio</title>
     
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK (Compat) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -17,757 +19,422 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        glass: "rgba(255, 255, 255, 0.7)",
+                        glassBorder: "rgba(255, 255, 255, 0.5)",
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        * {
-            font-family: 'Inter', sans-serif;
-        }
-        
-        .login-screen {
+        body {
+            background-color: #f0f9ff; /* Light Blue base */
+            /* Deep Ocean Gradient */
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(200, 50%, 10%, 1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(190, 60%, 30%, 1) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, hsla(220, 50%, 25%, 1) 0, transparent 50%);
+            background-attachment: fixed;
+            background-size: cover;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-        
-        .login-card {
-            background: white;
-            padding: 48px;
-            border-radius: 24px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
         }
-        
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
+        }
+
         .sidebar {
-            height: 100vh;
-            position: fixed;
-            width: 260px;
-            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            background: rgba(15, 23, 42, 0.95); /* Darker Slate/Blue */
+            backdrop-filter: blur(10px);
         }
-        
-        .main-content {
-            margin-left: 260px;
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 16px 24px;
-            border-radius: 12px;
-            color: white;
-            z-index: 1000;
-            transform: translateX(120%);
-            transition: transform 0.3s ease;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        ::-webkit-scrollbar-track {
+            background: transparent; 
         }
-        
-        .notification.show {
-            transform: translateX(0);
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8; 
+            border-radius: 4px;
         }
-        
-        .notification.success {
-            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-            border-left: 4px solid #059669;
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b; 
         }
-        
-        .notification.error {
-            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
-            border-left: 4px solid #DC2626;
-        }
-        
-        .notification.info {
-            background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
-            border-left: 4px solid #1D4ED8;
-        }
-        
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
+
+        /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
         
-        .card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            border: 1px solid #e2e8f0;
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
         }
-        
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #06b6d4; /* Cyan-500 */
             color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
         }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
-            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
-        }
-        
-        .btn-secondary {
-            background: #f1f5f9;
-            color: #475569;
+
+        /* Input Styling */
+        .modern-input {
+            background: rgba(255, 255, 255, 0.5);
             border: 1px solid #e2e8f0;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
+            transition: all 0.2s;
         }
-        
-        .btn-secondary:hover {
-            background: #e2e8f0;
-        }
-        
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
-        
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 14px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            font-size: 15px;
+        .modern-input:focus {
             background: white;
-        }
-        
-        .form-input:focus {
+            border-color: #06b6d4; /* Cyan-500 */
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
             outline: none;
-            border-color: #8b5cf6;
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
         }
-        
-        .table-container {
-            overflow-x: auto;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
+
+        /* Notification Toast */
+        .toast {
+            transform: translateX(150%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        
-        .table-container table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .table-container th {
-            background: #f8fafc;
-            padding: 16px;
-            text-align: left;
-            font-weight: 600;
-            color: #475569;
-            border-bottom: 2px solid #e2e8f0;
-        }
-        
-        .table-container td {
-            padding: 16px;
-            border-bottom: 1px solid #f1f5f9;
-        }
-        
-        .table-container tr:hover {
-            background: #f8fafc;
-        }
-        
-        .stats-card {
-            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-            color: white;
-            border-radius: 16px;
-            padding: 24px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .stats-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 200%;
-            background: rgba(255, 255, 255, 0.1);
-            transform: rotate(30deg);
-        }
-        
-        .stats-card h3 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .stats-card p {
-            opacity: 0.9;
-            font-size: 14px;
-            font-weight: 500;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            animation: fadeIn 0.2s ease;
-            padding: 20px;
-        }
-        
-        .modal {
-            background: white;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 700px;
-            max-height: 90vh;
-            overflow-y: auto;
-            animation: slideUp 0.3s ease;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
-        }
-        
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
-        .badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
-        .badge-success {
-            background: #d1fae5;
-            color: #065f46;
-            border: 1px solid #a7f3d0;
-        }
-        
-        .badge-warning {
-            background: #fef3c7;
-            color: #92400e;
-            border: 1px solid #fde68a;
-        }
-        
-        .badge-info {
-            background: #dbeafe;
-            color: #1e40af;
-            border: 1px solid #bfdbfe;
-        }
-        
-        .badge-purple {
-            background: #ede9fe;
-            color: #5b21b6;
-            border: 1px solid #ddd6fe;
-        }
-        
-        .skill-progress {
-            width: 100%;
-            height: 8px;
-            background: #e2e8f0;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        
-        .skill-progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #8b5cf6, #a78bfa);
-            border-radius: 4px;
-            transition: width 1s ease;
-        }
-        
-        .nav-active {
-            background: rgba(255, 255, 255, 0.1);
-            color: white !important;
-            border-left: 4px solid #8b5cf6;
-        }
-        
-        .nav-active i {
-            color: white;
-        }
-        
-        .image-preview {
-            width: 120px;
-            height: 120px;
-            border-radius: 12px;
-            object-fit: cover;
-            border: 2px dashed #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f8fafc;
-            color: #94a3b8;
-            overflow: hidden;
-        }
-        
-        .image-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 10px;
-        }
-        
-        .file-input-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-            cursor: pointer;
-        }
-        
-        .file-input-wrapper input[type=file] {
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            cursor: pointer;
-            height: 100%;
-            width: 100%;
-        }
-        
-        .upload-btn {
-            background: #f1f5f9;
-            border: 2px dashed #cbd5e1;
-            padding: 16px;
-            border-radius: 12px;
-            text-align: center;
-            color: #64748b;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        .upload-btn:hover {
-            background: #e2e8f0;
-            border-color: #94a3b8;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 48px 24px;
-            color: #64748b;
-        }
-        
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-        
-        .icon-preview {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f1f5f9;
-            color: #64748b;
-            font-size: 24px;
-            margin-right: 12px;
-        }
-        
-        .icon-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            padding: 4px;
-        }
-        
-        .progress-bar {
-            width: 100%;
-            height: 6px;
-            background: #e2e8f0;
-            border-radius: 3px;
-            overflow: hidden;
-            margin-top: 8px;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #8b5cf6, #a78bfa);
-            border-radius: 3px;
-            transition: width 0.3s ease;
-        }
-        
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #8b5cf6;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        @media (max-width: 768px) {
-            .sidebar {
-                display: none;
-            }
-            
-            .main-content {
-                margin-left: 0;
-            }
+        .toast.show {
+            transform: translateX(0);
         }
     </style>
 </head>
-<body>
-    
-    <!-- Notification -->
-    <div id="notification" class="notification hidden">
-        <i class="fas fa-check-circle"></i>
-        <span id="notification-text"></span>
+<body class="text-slate-800 antialiased font-sans">
+
+    <!-- Notification Toast -->
+    <div id="notification" class="toast fixed top-6 right-6 z-50 flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl glass-panel border-l-4 border-teal-500">
+        <div class="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-teal-600">
+            <i class="fas fa-check"></i>
+        </div>
+        <div>
+            <h4 class="font-bold text-sm text-slate-800">Notification</h4>
+            <p id="notification-text" class="text-xs text-slate-500 font-medium"></p>
+        </div>
     </div>
 
     <!-- Login Screen -->
-    <div id="loginScreen" class="login-screen">
-        <div class="login-card">
-            <div class="text-center mb-10">
-                <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <i class="fas fa-lock text-white text-2xl"></i>
+    <div id="loginScreen" class="fixed inset-0 z-40 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
+        
+        <div class="relative w-full max-w-md bg-white/90 backdrop-blur-xl p-10 rounded-3xl shadow-2xl border border-white/50 animate-fade-in">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-gradient-to-tr from-cyan-600 to-blue-600 rounded-2xl mx-auto flex items-center justify-center shadow-lg mb-6 shadow-cyan-500/30">
+                    <i class="fas fa-fingerprint text-3xl text-white"></i>
                 </div>
-                <h2 class="text-3xl font-bold text-gray-800 mb-2">Admin Login</h2>
-                <p class="text-gray-600">Enter your credentials to access the dashboard</p>
+                <h1 class="text-3xl font-bold text-slate-800 mb-2">Admin Access</h1>
+                <p class="text-slate-500">Authenticate to manage your portfolio</p>
             </div>
-            
-            <form id="loginForm" class="space-y-6">
+
+            <form id="loginForm" class="space-y-5">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
-                    <input type="text" id="loginUsername" required class="form-input" placeholder="Enter username" autocomplete="username">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Username</label>
+                    <input type="text" id="loginUsername" class="w-full px-4 py-3 rounded-xl modern-input" placeholder="Enter username">
                 </div>
-                
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                    <input type="password" id="loginPassword" required class="form-input" placeholder="Enter password" autocomplete="current-password">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Password</label>
+                    <input type="password" id="loginPassword" class="w-full px-4 py-3 rounded-xl modern-input" placeholder="••••••••">
                 </div>
-                
-                <button type="submit" class="btn-primary w-full flex items-center justify-center">
-                    <i class="fas fa-sign-in-alt mr-2"></i> Sign In
+                <button type="submit" class="w-full py-4 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 hover:shadow-lg transition-all transform hover:scale-[1.02] active:scale-95">
+                    Unlock Dashboard
                 </button>
-                
-                <div class="text-center text-sm text-gray-600 mt-6">
-                    <p>Contact admin for credentials</p>
-                </div>
             </form>
+            <div class="mt-6 text-center text-xs text-slate-400">
+                Default: admin / admin123
+            </div>
         </div>
     </div>
 
     <!-- Dashboard Layout -->
-    <div id="dashboard" class="hidden">
+    <div id="dashboard" class="hidden flex h-screen overflow-hidden">
+        
         <!-- Sidebar -->
-        <div class="sidebar text-white">
-            <div class="p-6">
-                <div class="flex items-center gap-3 mb-10">
-                    <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-cog text-white text-xl"></i>
+        <aside class="sidebar w-72 flex-shrink-0 fixed h-full z-30 transition-transform duration-300 transform -translate-x-full md:translate-x-0 hidden md:block">
+            <div class="h-full flex flex-col">
+                <div class="p-8">
+                    <div class="flex items-center gap-3 mb-10">
+                        <div class="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                            <i class="fas fa-layer-group text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold text-white tracking-tight">Nexus<span class="text-cyan-400">Admin</span></span>
                     </div>
-                    <div>
-                        <h1 class="font-bold text-xl">Portfolio Admin</h1>
-                        <p class="text-sm text-gray-400">Management Dashboard</p>
-                    </div>
+
+                    <nav class="space-y-2">
+                        <button onclick="showTab('dashboardTab')" class="nav-item w-full flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all group active">
+                            <i class="fas fa-chart-pie w-6 text-center group-hover:text-cyan-400 transition-colors"></i>
+                            <span class="font-medium">Overview</span>
+                        </button>
+                        <button onclick="showTab('projectsTab')" class="nav-item w-full flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all group">
+                            <i class="fas fa-folder-open w-6 text-center group-hover:text-blue-400 transition-colors"></i>
+                            <span class="font-medium">Projects</span>
+                        </button>
+                        <button onclick="showTab('skillsTab')" class="nav-item w-full flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all group">
+                            <i class="fas fa-bolt w-6 text-center group-hover:text-teal-400 transition-colors"></i>
+                            <span class="font-medium">Skills & Tools</span>
+                        </button>
+                        <button onclick="showTab('testimonialsTab')" class="nav-item w-full flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all group">
+                            <i class="fas fa-quote-right w-6 text-center group-hover:text-sky-400 transition-colors"></i>
+                            <span class="font-medium">Testimonials</span>
+                        </button>
+                        <button onclick="showTab('messagesTab')" class="nav-item w-full flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all group">
+                            <div class="relative">
+                                <i class="fas fa-envelope w-6 text-center group-hover:text-indigo-400 transition-colors"></i>
+                                <span id="unreadDot" class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-slate-900 hidden"></span>
+                            </div>
+                            <span class="font-medium">Messages</span>
+                        </button>
+
+                        <!-- Added Live Preview Button below Messages -->
+                        <div class="pt-4 mt-2 border-t border-white/10">
+                            <a href="index.html" target="_blank" class="nav-item w-full flex items-center gap-4 px-4 py-3 rounded-xl text-cyan-200 hover:bg-cyan-900/30 hover:text-cyan-100 transition-all group border border-dashed border-cyan-800/50">
+                                <i class="fas fa-external-link-alt w-6 text-center group-hover:text-cyan-400 transition-colors"></i>
+                                <span class="font-medium">Live Preview</span>
+                            </a>
+                        </div>
+                    </nav>
                 </div>
-                
-                <nav class="space-y-2">
-                    <button onclick="showTab('dashboardTab')" class="nav-btn w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 flex items-center gap-3 transition-all duration-200 nav-active">
-                        <i class="fas fa-chart-line w-5"></i>
-                        Dashboard
-                    </button>
-                    
-                    <button onclick="showTab('projectsTab')" class="nav-btn w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 flex items-center gap-3 transition-all duration-200">
-                        <i class="fas fa-briefcase w-5"></i>
-                        Projects
-                    </button>
-                    
-                    <button onclick="showTab('skillsTab')" class="nav-btn w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 flex items-center gap-3 transition-all duration-200">
-                        <i class="fas fa-code w-5"></i>
-                        Skills
-                    </button>
-                    
-                    <button onclick="showTab('testimonialsTab')" class="nav-btn w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 flex items-center gap-3 transition-all duration-200">
-                        <i class="fas fa-comment-dots w-5"></i>
-                        Testimonials
-                    </button>
-                    
-                    <button onclick="showTab('messagesTab')" class="nav-btn w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 flex items-center gap-3 transition-all duration-200">
-                        <i class="fas fa-envelope w-5"></i>
-                        Messages
-                        <span id="unreadBadge" class="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full hidden">0</span>
-                    </button>
-                </nav>
-                
-                <div class="absolute bottom-6 left-6 right-6">
-                    <a href="index.html" target="_blank" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all duration-200 mb-3">
-                        <i class="fas fa-external-link-alt"></i>
-                        View Portfolio
-                    </a>
-                    
-                    <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 transition-all duration-200">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Logout
+
+                <div class="mt-auto p-6 border-t border-white/10">
+                    <div class="flex items-center gap-3 mb-6 p-3 rounded-xl bg-white/5">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-cyan-500 flex items-center justify-center text-white font-bold text-sm">
+                            AD
+                        </div>
+                        <div>
+                            <p class="text-white text-sm font-semibold" id="usernameDisplay">Admin</p>
+                            <p class="text-slate-400 text-xs">Super User</p>
+                        </div>
+                    </div>
+                    <button onclick="logout()" class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-all text-sm font-medium">
+                        <i class="fas fa-sign-out-alt"></i> Sign Out
                     </button>
                 </div>
             </div>
-        </div>
+        </aside>
 
         <!-- Main Content -->
-        <div class="main-content min-h-screen bg-gray-50">
-            <!-- Header -->
-            <header class="bg-white border-b border-gray-200 py-4 px-8">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h2 id="pageTitle" class="text-2xl font-bold text-gray-800">Dashboard Overview</h2>
-                        <p class="text-gray-600" id="pageSubtitle">Welcome back! Here's what's happening with your portfolio.</p>
-                    </div>
-                    
-                    <div class="flex items-center gap-4">
-                        <div class="flex items-center gap-3 bg-gray-100 px-4 py-2 rounded-xl">
-                            <i class="fas fa-user-circle text-gray-600"></i>
-                            <span class="font-medium" id="usernameDisplay">Admin</span>
-                        </div>
-                        <button onclick="refreshData()" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-all">
-                            <i class="fas fa-sync-alt text-gray-600"></i>
-                        </button>
-                    </div>
+        <main class="flex-1 md:ml-72 overflow-y-auto h-full p-6 md:p-10 relative">
+            <!-- Header for Mobile -->
+            <div class="md:hidden flex justify-between items-center mb-8">
+                <span class="text-xl font-bold text-white">NexusAdmin</span>
+                <button class="text-white p-2" onclick="document.querySelector('.sidebar').classList.toggle('-translate-x-full')">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+
+            <header class="flex justify-between items-end mb-10 animate-fade-in">
+                <div>
+                    <h2 id="pageTitle" class="text-3xl font-bold text-white mb-2 drop-shadow-md">Overview</h2>
+                    <p id="pageSubtitle" class="text-slate-200 font-light">Welcome back, here's what's happening.</p>
                 </div>
+                <button onclick="refreshData()" class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-white hover:text-cyan-600 transition-all flex items-center justify-center shadow-lg">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
             </header>
 
             <!-- Dashboard Tab -->
-            <div id="dashboardTab" class="tab-content active p-8">
-                <!-- Stats Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="stats-card" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 id="totalProjects">0</h3>
-                                <p>Total Projects</p>
-                            </div>
-                            <i class="fas fa-briefcase text-2xl opacity-50"></i>
+            <div id="dashboardTab" class="tab-content block animate-fade-in">
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                    <div class="glass-panel p-6 rounded-2xl flex items-center gap-5">
+                        <div class="w-14 h-14 rounded-2xl bg-cyan-100 text-cyan-600 flex items-center justify-center text-2xl">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div>
+                            <p class="text-slate-500 text-sm font-medium">Total Projects</p>
+                            <h3 id="totalProjects" class="text-3xl font-bold text-slate-800">0</h3>
                         </div>
                     </div>
-                    
-                    <div class="stats-card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 id="totalMessages">0</h3>
-                                <p>Messages</p>
-                            </div>
-                            <i class="fas fa-envelope text-2xl opacity-50"></i>
+                    <div class="glass-panel p-6 rounded-2xl flex items-center gap-5">
+                        <div class="w-14 h-14 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-2xl">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <p class="text-slate-500 text-sm font-medium">Messages</p>
+                            <h3 id="totalMessages" class="text-3xl font-bold text-slate-800">0</h3>
                         </div>
                     </div>
-                    
-                    <div class="stats-card" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 id="totalTestimonials">0</h3>
-                                <p>Testimonials</p>
-                            </div>
-                            <i class="fas fa-comment-dots text-2xl opacity-50"></i>
+                    <div class="glass-panel p-6 rounded-2xl flex items-center gap-5">
+                        <div class="w-14 h-14 rounded-2xl bg-teal-100 text-teal-600 flex items-center justify-center text-2xl">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div>
+                            <p class="text-slate-500 text-sm font-medium">Skills Listed</p>
+                            <h3 id="totalSkills" class="text-3xl font-bold text-slate-800">0</h3>
                         </div>
                     </div>
-                    
-                    <div class="stats-card" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 id="totalSkills">0</h3>
-                                <p>Skills</p>
-                            </div>
-                            <i class="fas fa-code text-2xl opacity-50"></i>
+                    <div class="glass-panel p-6 rounded-2xl flex items-center gap-5">
+                        <div class="w-14 h-14 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-2xl">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div>
+                            <p class="text-slate-500 text-sm font-medium">Testimonials</p>
+                            <h3 id="totalTestimonials" class="text-3xl font-bold text-slate-800">0</h3>
                         </div>
                     </div>
                 </div>
 
-                <!-- Quick Actions -->
-                <div class="card p-6 mb-8">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">Quick Actions</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <button onclick="showTab('projectsTab'); openProjectModal();" class="p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition-all duration-200 flex items-center justify-center gap-3">
-                            <i class="fas fa-plus text-purple-500"></i>
-                            <span class="font-medium">Add New Project</span>
-                        </button>
-                        
-                        <button onclick="showTab('skillsTab'); openSkillModal();" class="p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-green-500 hover:bg-green-50 transition-all duration-200 flex items-center justify-center gap-3">
-                            <i class="fas fa-plus text-green-500"></i>
-                            <span class="font-medium">Add New Skill</span>
-                        </button>
-                        
-                        <button onclick="showTab('testimonialsTab'); openTestimonialModal();" class="p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition-all duration-200 flex items-center justify-center gap-3">
-                            <i class="fas fa-plus text-orange-500"></i>
-                            <span class="font-medium">Add Testimonial</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Recent Messages -->
-                <div class="card p-6">
+                <!-- Monthly Activity Chart -->
+                <div class="glass-panel p-6 rounded-2xl mb-10">
                     <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-lg font-bold text-gray-800">Recent Messages</h3>
-                        <button onclick="showTab('messagesTab')" class="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center gap-1">
-                            View All <i class="fas fa-arrow-right text-xs"></i>
-                        </button>
+                        <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fas fa-chart-line text-cyan-500"></i> Monthly Activity (Messages)
+                        </h3>
+                        <div class="text-sm text-slate-500 bg-white/50 px-3 py-1 rounded-full">Last 6 Months</div>
+                    </div>
+                    <div class="w-full h-64">
+                        <canvas id="activityChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Messages & Actions -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 glass-panel rounded-2xl p-6">
+                        <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                            <i class="fas fa-inbox text-slate-400"></i> Recent Messages
+                        </h3>
+                        <div id="recentMessages" class="space-y-4">
+                            <!-- Injected via JS -->
+                        </div>
                     </div>
                     
-                    <div id="recentMessages" class="space-y-4">
-                        <div class="empty-state">
-                            <i class="fas fa-envelope-open-text"></i>
-                            <p>No messages yet</p>
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h3 class="text-lg font-bold text-slate-800 mb-6">Quick Actions</h3>
+                        <div class="space-y-3">
+                            <button onclick="showTab('projectsTab'); openProjectModal();" class="w-full p-4 rounded-xl border border-dashed border-slate-300 hover:border-cyan-500 hover:bg-cyan-50 text-slate-600 hover:text-cyan-700 transition-all flex items-center gap-3 group">
+                                <div class="w-8 h-8 rounded-lg bg-slate-100 group-hover:bg-cyan-200 flex items-center justify-center transition-colors">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <span class="font-medium">Add Project</span>
+                            </button>
+                            <button onclick="showTab('skillsTab'); openSkillModal();" class="w-full p-4 rounded-xl border border-dashed border-slate-300 hover:border-teal-500 hover:bg-teal-50 text-slate-600 hover:text-teal-700 transition-all flex items-center gap-3 group">
+                                <div class="w-8 h-8 rounded-lg bg-slate-100 group-hover:bg-teal-200 flex items-center justify-center transition-colors">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <span class="font-medium">Add Skill</span>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Projects Tab -->
-            <div id="projectsTab" class="tab-content p-8">
-                <div class="flex justify-between items-center mb-8">
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-800">Manage Projects</h2>
-                        <p class="text-gray-600">Add, edit, or remove portfolio projects</p>
+            <div id="projectsTab" class="tab-content hidden animate-fade-in">
+                <div class="glass-panel rounded-2xl overflow-hidden">
+                    <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-white/50">
+                        <h3 class="font-bold text-lg text-slate-800">Portfolio Projects</h3>
+                        <button onclick="openProjectModal()" class="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl font-medium shadow-lg shadow-cyan-500/30 transition-all transform hover:-translate-y-0.5">
+                            <i class="fas fa-plus mr-2"></i> New Project
+                        </button>
                     </div>
-                    <button onclick="openProjectModal()" class="btn-primary">
-                        <i class="fas fa-plus"></i> Add Project
-                    </button>
-                </div>
-                
-                <div class="card p-6">
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Project</th>
-                                    <th>Live Link</th>
-                                    <th>Technologies</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-slate-50/50">
+                                <tr class="text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                    <th class="p-6">Project Detail</th>
+                                    <th class="p-6">Tech Stack</th>
+                                    <th class="p-6">Status</th>
+                                    <th class="p-6 text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="projectsTable">
-                                <!-- Projects will be loaded here -->
+                            <tbody id="projectsTable" class="divide-y divide-gray-100">
+                                <!-- Data Injected JS -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Skills Tab -->
-            <div id="skillsTab" class="tab-content p-8">
+            <!-- Skills Tab (SPLIT SECTIONS) -->
+            <div id="skillsTab" class="tab-content hidden animate-fade-in">
                 <div class="flex justify-between items-center mb-8">
                     <div>
-                        <h2 class="text-2xl font-bold text-gray-800">Manage Skills</h2>
-                        <p class="text-gray-600">Update your technical skills and design tools</p>
+                        <h3 class="text-2xl font-bold text-white">Skills & Tools</h3>
+                        <p class="text-slate-200 text-sm">Manage your technical expertise</p>
                     </div>
-                    <button onclick="openSkillModal()" class="btn-primary">
-                        <i class="fas fa-plus"></i> Add Skill
+                    <button onclick="openSkillModal()" class="px-5 py-2.5 bg-teal-500 hover:bg-teal-600 text-white rounded-xl font-medium shadow-lg shadow-teal-500/30 transition-all transform hover:-translate-y-0.5">
+                        <i class="fas fa-plus mr-2"></i> Add Skill
                     </button>
                 </div>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="card p-6">
-                        <h3 class="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
-                            <i class="fas fa-code text-blue-500"></i> Development Skills
-                        </h3>
-                        <div id="devSkillsContainer" class="space-y-4">
-                            <!-- Dev skills will be loaded here -->
+
+                <!-- Technical Section -->
+                <div class="mb-10">
+                    <div class="flex items-center gap-3 mb-4 border-b border-white/10 pb-2">
+                        <div class="w-8 h-8 rounded-lg bg-teal-100 flex items-center justify-center text-teal-600">
+                            <i class="fas fa-code"></i>
                         </div>
+                        <h4 class="text-xl font-bold text-white">Technical / Development</h4>
                     </div>
-                    
-                    <div class="card p-6">
-                        <h3 class="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
-                            <i class="fas fa-paint-brush text-pink-500"></i> Design Tools
-                        </h3>
-                        <div id="designSkillsContainer" class="space-y-4">
-                            <!-- Design skills will be loaded here -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="techSkillsGrid">
+                        <!-- Technical Skills Injected Here -->
+                    </div>
+                </div>
+
+                <!-- Non-Technical Section -->
+                <div>
+                    <div class="flex items-center gap-3 mb-4 border-b border-white/10 pb-2">
+                        <div class="w-8 h-8 rounded-lg bg-sky-100 flex items-center justify-center text-sky-600">
+                            <i class="fas fa-layer-group"></i>
                         </div>
+                        <h4 class="text-xl font-bold text-white">Design & Tools</h4>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="designSkillsGrid">
+                        <!-- Design Skills Injected Here -->
                     </div>
                 </div>
             </div>
 
             <!-- Testimonials Tab -->
-            <div id="testimonialsTab" class="tab-content p-8">
-                <div class="flex justify-between items-center mb-8">
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-800">Manage Testimonials</h2>
-                        <p class="text-gray-600">Client reviews with profile images</p>
+            <div id="testimonialsTab" class="tab-content hidden animate-fade-in">
+                 <div class="glass-panel rounded-2xl overflow-hidden">
+                    <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-white/50">
+                        <h3 class="font-bold text-lg text-slate-800">Client Reviews</h3>
+                        <button onclick="openTestimonialModal()" class="px-5 py-2.5 bg-sky-500 hover:bg-sky-600 text-white rounded-xl font-medium shadow-lg shadow-sky-500/30 transition-all transform hover:-translate-y-0.5">
+                            <i class="fas fa-plus mr-2"></i> Add Review
+                        </button>
                     </div>
-                    <button onclick="openTestimonialModal()" class="btn-primary">
-                        <i class="fas fa-plus"></i> Add Testimonial
-                    </button>
-                </div>
-                
-                <div class="card p-6">
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Client</th>
-                                    <th>Company</th>
-                                    <th>Rating</th>
-                                    <th>Date</th>
-                                    <th>Actions</th>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-slate-50/50">
+                                <tr class="text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                    <th class="p-6">Client</th>
+                                    <th class="p-6">Feedback</th>
+                                    <th class="p-6">Rating</th>
+                                    <th class="p-6 text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="testimonialsTable">
-                                <!-- Testimonials will be loaded here -->
+                            <tbody id="testimonialsTable" class="divide-y divide-gray-100">
+                                <!-- Data Injected -->
                             </tbody>
                         </table>
                     </div>
@@ -775,1602 +442,886 @@
             </div>
 
             <!-- Messages Tab -->
-            <div id="messagesTab" class="tab-content p-8">
-                <div class="flex justify-between items-center mb-8">
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-800">Contact Messages</h2>
-                        <p class="text-gray-600">Manage incoming messages from the contact form</p>
+            <div id="messagesTab" class="tab-content hidden animate-fade-in">
+                <div class="glass-panel rounded-2xl overflow-hidden">
+                    <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-white/50">
+                        <h3 class="font-bold text-lg text-slate-800">Inbox</h3>
+                        <div class="flex gap-4">
+                            <button onclick="openLogsModal()" class="text-sm text-slate-500 hover:text-slate-800 font-medium flex items-center gap-2">
+                                <i class="fas fa-history"></i> View Delete Logs
+                            </button>
+                            <button onclick="markAllAsRead()" class="text-sm text-cyan-600 hover:text-cyan-800 font-medium">
+                                Mark all read
+                            </button>
+                        </div>
                     </div>
-                    <button onclick="markAllAsRead()" class="btn-secondary">
-                        <i class="fas fa-eye"></i> Mark All as Read
-                    </button>
+                    <div class="divide-y divide-gray-100" id="messagesList">
+                        <!-- Messages List -->
+                    </div>
                 </div>
-                
-                <div class="card p-6">
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>From</th>
-                                    <th>Subject</th>
-                                    <th>Message</th>
-                                    <th>Date</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="messagesTable">
-                                <!-- Messages will be loaded here -->
-                            </tbody>
-                        </table>
-                    </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Modals (Reused structure with updated styling) -->
+    
+    <!-- Message Logs Modal -->
+    <div id="messageLogsModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeLogsModal()"></div>
+        <div class="relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden transform transition-all scale-100 h-[80vh] flex flex-col">
+            <div class="p-6 border-b border-gray-100 bg-slate-50/50 flex justify-between items-center shrink-0">
+                <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2"><i class="fas fa-history text-slate-400"></i> Deleted Messages Log</h3>
+                <button onclick="closeLogsModal()" class="text-slate-400 hover:text-rose-500 text-xl"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6 bg-slate-50">
+                <div id="logsList" class="space-y-3">
+                    <!-- Logs Injected Here -->
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Project Modal (Updated with Live Link and Image Upload) -->
-    <div id="projectModal" class="modal-overlay hidden">
-        <div class="modal">
-            <div class="p-8">
-                <div class="flex justify-between items-center mb-8">
-                    <div>
-                        <h3 class="text-2xl font-bold text-gray-800" id="projectModalTitle">Add New Project</h3>
-                        <p class="text-gray-600">Fill in the project details</p>
-                    </div>
-                    <button onclick="closeProjectModal()" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times text-2xl"></i>
-                    </button>
-                </div>
-                
-                <form id="projectForm" class="space-y-6">
-                    <input type="hidden" id="projectIdField">
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Project Title *</label>
-                            <input type="text" id="projectTitle" required class="form-input" placeholder="Fintech Dashboard">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Technologies *</label>
-                            <input type="text" id="projectTech" required class="form-input" placeholder="React, Tailwind, Firebase">
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Live Project Link *</label>
-                        <input type="url" id="projectLink" required class="form-input" placeholder="https://your-project.com">
-                        <p class="text-sm text-gray-500 mt-1">Link that will open when users click "View Project"</p>
-                    </div>
-                    
-                    <!-- Project Image Upload Section -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Project Thumbnail *</label>
-                        <div class="space-y-4">
-                            <div id="projectImagePreview" class="image-preview">
-                                <i class="fas fa-image text-2xl"></i>
-                            </div>
-                            
-                            <div class="flex items-center gap-4">
-                                <div class="file-input-wrapper">
-                                    <button type="button" class="upload-btn" onclick="document.getElementById('projectImageFile').click()">
-                                        <i class="fas fa-upload"></i> Upload Image
-                                    </button>
-                                    <input type="file" id="projectImageFile" accept="image/*" class="hidden" onchange="previewProjectImage(event)">
-                                </div>
-                                
-                                <div class="flex-1">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Or enter Image URL</label>
-                                    <input type="url" id="projectImageUrl" class="form-input" placeholder="https://example.com/image.jpg" onchange="updateProjectImagePreview(this.value)">
-                                </div>
-                            </div>
-                            
-                            <!-- Upload Progress -->
-                            <div id="projectUploadProgress" class="hidden">
-                                <div class="flex items-center justify-between text-sm text-gray-600 mb-1">
-                                    <span>Uploading...</span>
-                                    <span id="projectUploadPercent">0%</span>
-                                </div>
-                                <div class="progress-bar">
-                                    <div id="projectUploadBar" class="progress-fill" style="width: 0%"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <p class="text-sm text-gray-500 mt-2">Recommended: 800x600 pixels, JPG or PNG format</p>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Display Order *</label>
-                            <input type="number" id="projectOrder" required class="form-input" value="0" min="0">
-                        </div>
-                        
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Featured Project</label>
-                                <p class="text-sm text-gray-500">Display this project prominently</p>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="projectFeatured" class="sr-only peer">
-                                <div class="w-12 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                        <textarea id="projectDescription" rows="3" class="form-input" placeholder="Brief description of the project..."></textarea>
-                    </div>
-                    
-                    <div class="flex justify-end gap-4 pt-6 border-t border-gray-200">
-                        <button type="button" onclick="closeProjectModal()" class="btn-secondary">
-                            Cancel
-                        </button>
-                        <button type="submit" id="projectSubmitBtn" class="btn-primary">
-                            <i class="fas fa-save"></i> Save Project
-                        </button>
-                    </div>
-                </form>
+    <!-- Project Modal -->
+    <div id="projectModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeProjectModal()"></div>
+        <div class="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden transform transition-all scale-100">
+            <div class="p-8 border-b border-gray-100 bg-slate-50/50 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-slate-800" id="projectModalTitle">Project Details</h3>
+                <button onclick="closeProjectModal()" class="text-slate-400 hover:text-rose-500 text-xl"><i class="fas fa-times"></i></button>
             </div>
+            <form id="projectForm" class="p-8 space-y-6 max-h-[70vh] overflow-y-auto">
+                <input type="hidden" id="projectIdField">
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-2">Title</label>
+                        <input type="text" id="projectTitle" required class="w-full p-3 rounded-xl modern-input">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-2">Order</label>
+                        <input type="number" id="projectOrder" required class="w-full p-3 rounded-xl modern-input" value="0">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-2">Technologies (comma separated)</label>
+                    <input type="text" id="projectTech" required class="w-full p-3 rounded-xl modern-input" placeholder="React, Node.js, Tailwind">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-2">Live Link</label>
+                    <input type="url" id="projectLink" required class="w-full p-3 rounded-xl modern-input" placeholder="https://...">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-2">Image URL</label>
+                    <div class="flex gap-4">
+                        <input type="url" id="projectImageUrl" required class="w-full p-3 rounded-xl modern-input" placeholder="https://..." oninput="document.getElementById('pPreview').src = this.value">
+                        <img id="pPreview" src="" class="w-12 h-12 rounded-lg bg-slate-100 object-cover border border-slate-200">
+                    </div>
+                </div>
+                <div>
+                    <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50">
+                        <input type="checkbox" id="projectFeatured" class="w-5 h-5 text-cyan-600 rounded focus:ring-cyan-500">
+                        <span class="text-sm font-medium text-slate-700">Feature this project on homepage</span>
+                    </label>
+                </div>
+                <div class="pt-4 flex justify-end gap-3">
+                    <button type="button" onclick="closeProjectModal()" class="px-6 py-3 rounded-xl text-slate-500 hover:bg-slate-100 font-medium">Cancel</button>
+                    <button type="submit" id="projectSubmitBtn" class="px-6 py-3 rounded-xl bg-cyan-600 text-white font-bold hover:bg-cyan-700 shadow-lg shadow-cyan-500/30">Save Project</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Skill Modal (Updated with Custom Icon Upload) -->
-    <div id="skillModal" class="modal-overlay hidden">
-        <div class="modal">
-            <div class="p-8">
-                <div class="flex justify-between items-center mb-8">
+    <!-- Skill Modal -->
+    <div id="skillModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeSkillModal()"></div>
+        <div class="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden">
+            <div class="p-8 border-b border-gray-100 bg-slate-50/50 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-slate-800">Skill / Tool</h3>
+                <button onclick="closeSkillModal()" class="text-slate-400 hover:text-rose-500 text-xl"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="skillForm" class="p-8 space-y-5">
+                <input type="hidden" id="skillIdField">
+                <div class="grid grid-cols-2 gap-5">
                     <div>
-                        <h3 class="text-2xl font-bold text-gray-800">Add New Skill</h3>
-                        <p class="text-gray-600">Add a skill or design tool with custom icon</p>
+                        <label class="block text-xs font-bold text-slate-500 mb-2">Name</label>
+                        <input type="text" id="skillName" required class="w-full p-3 rounded-xl modern-input" placeholder="React">
                     </div>
-                    <button onclick="closeSkillModal()" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times text-2xl"></i>
-                    </button>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-2">Proficiency (%)</label>
+                        <input type="number" id="skillPercentage" required min="1" max="100" class="w-full p-3 rounded-xl modern-input" placeholder="85">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-2">Category</label>
+                    <select id="skillType" class="w-full p-3 rounded-xl modern-input bg-white">
+                        <option value="development">Technical / Development</option>
+                        <option value="design">Design / Tools</option>
+                    </select>
                 </div>
                 
-                <form id="skillForm" class="space-y-6">
-                    <input type="hidden" id="skillIdField">
-                    <input type="hidden" id="skillIconType" value="fontawesome">
-                    <input type="hidden" id="skillCustomIconUrl">
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <label class="block text-xs font-bold text-slate-500 mb-3 uppercase">Icon Source (Choose One)</label>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Skill Name *</label>
-                            <input type="text" id="skillName" required class="form-input" placeholder="HTML5">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Percentage (1-100) *</label>
-                            <input type="number" id="skillPercentage" min="1" max="100" required class="form-input" placeholder="95">
+                    <div class="mb-4">
+                        <label class="text-xs text-slate-400 mb-1 block">Option A: FontAwesome Class</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="skillIcon" class="w-full p-2 rounded-lg text-sm modern-input" placeholder="fab fa-react" oninput="toggleIconInput('icon')">
                         </div>
                     </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Skill Type *</label>
-                            <select id="skillType" required class="form-input">
-                                <option value="development">Development</option>
-                                <option value="design">Design</option>
-                            </select>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Icon Type</label>
-                            <div class="flex gap-4">
-                                <label class="flex items-center">
-                                    <input type="radio" name="iconType" value="fontawesome" checked onchange="changeIconType('fontawesome')" class="mr-2">
-                                    FontAwesome
-                                </label>
-                                <label class="flex items-center">
-                                    <input type="radio" name="iconType" value="custom" onchange="changeIconType('custom')" class="mr-2">
-                                    Custom Icon
-                                </label>
-                            </div>
+                    <div class="relative flex items-center justify-center my-2">
+                        <hr class="w-full border-slate-200">
+                        <span class="absolute bg-slate-50 px-2 text-xs text-slate-400">OR</span>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="text-xs text-slate-400 mb-1 block">Option B: Image URL (Logo)</label>
+                        <div class="flex gap-2">
+                            <input type="url" id="skillImageUrl" class="w-full p-2 rounded-lg text-sm modern-input" placeholder="https://..." oninput="toggleIconInput('image')">
                         </div>
                     </div>
                     
-                    <!-- FontAwesome Icon Input -->
-                    <div id="fontawesomeSection">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">FontAwesome Icon Class *</label>
-                        <input type="text" id="skillIcon" required class="form-input" placeholder="fab fa-html5">
-                        <p class="text-sm text-gray-500 mt-1">Use FontAwesome icon classes (fab, fas, far, fal)</p>
-                        
-                        <div class="mt-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Icon Preview</label>
-                            <div class="flex items-center">
-                                <div class="icon-preview">
-                                    <i id="iconPreview" class="fas fa-question"></i>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-600">Live preview of your icon</p>
-                                    <p class="text-xs text-gray-500">Icons will update as you type</p>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="mt-4 flex justify-between items-center">
+                         <div id="liveIconPreview" class="w-10 h-10 rounded bg-white border border-slate-200 flex items-center justify-center text-slate-400">
+                             <i class="fas fa-eye"></i>
+                         </div>
+                         <p class="text-xs text-slate-400 italic">Preview updates automatically</p>
                     </div>
-                    
-                    <!-- Custom Icon Upload Section -->
-                    <div id="customIconSection" class="hidden">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Custom Icon</label>
-                        <div class="space-y-4">
-                            <div id="customIconPreview" class="image-preview">
-                                <i class="fas fa-upload text-2xl"></i>
-                            </div>
-                            
-                            <div class="flex items-center gap-4">
-                                <div class="file-input-wrapper">
-                                    <button type="button" class="upload-btn" onclick="document.getElementById('customIconFile').click()">
-                                        <i class="fas fa-upload"></i> Upload Icon
-                                    </button>
-                                    <input type="file" id="customIconFile" accept="image/*,.svg" class="hidden" onchange="previewCustomIcon(event)">
-                                </div>
-                                
-                                <div class="flex-1">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Or enter Icon URL</label>
-                                    <input type="url" id="customIconUrl" class="form-input" placeholder="https://example.com/icon.svg" onchange="updateCustomIconPreview(this.value)">
-                                </div>
-                            </div>
-                            
-                            <!-- Upload Progress -->
-                            <div id="iconUploadProgress" class="hidden">
-                                <div class="flex items-center justify-between text-sm text-gray-600 mb-1">
-                                    <span>Uploading...</span>
-                                    <span id="iconUploadPercent">0%</span>
-                                </div>
-                                <div class="progress-bar">
-                                    <div id="iconUploadBar" class="progress-fill" style="width: 0%"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <p class="text-sm text-gray-500 mt-2">Recommended: SVG format, 100x100 pixels</p>
-                    </div>
-                    
-                    <div id="iconColorSection">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Icon Color (CSS class)</label>
-                        <input type="text" id="skillIconColor" class="form-input" placeholder="text-orange-600">
-                        <p class="text-sm text-gray-500 mt-1">Tailwind CSS color class for FontAwesome icons</p>
-                    </div>
-                    
-                    <div class="flex justify-end gap-4 pt-6 border-t border-gray-200">
-                        <button type="button" onclick="closeSkillModal()" class="btn-secondary">
-                            Cancel
-                        </button>
-                        <button type="submit" id="skillSubmitBtn" class="btn-primary">
-                            <i class="fas fa-save"></i> Save Skill
-                        </button>
-                    </div>
-                </form>
-            </div>
+                </div>
+
+                <div class="pt-4 flex justify-end gap-3">
+                    <button type="button" onclick="closeSkillModal()" class="px-6 py-3 rounded-xl text-slate-500 hover:bg-slate-100 font-medium">Cancel</button>
+                    <button type="submit" id="skillSubmitBtn" class="px-6 py-3 rounded-xl bg-teal-500 text-white font-bold hover:bg-teal-600 shadow-lg shadow-teal-500/30">Save Skill</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Testimonial Modal -->
-    <div id="testimonialModal" class="modal-overlay hidden">
-        <div class="modal">
-            <div class="p-8">
-                <div class="flex justify-between items-center mb-8">
-                    <div>
-                        <h3 class="text-2xl font-bold text-gray-800">Add Testimonial</h3>
-                        <p class="text-gray-600">Client feedback with profile image</p>
-                    </div>
-                    <button onclick="closeTestimonialModal()" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times text-2xl"></i>
-                    </button>
-                </div>
-                
-                <form id="testimonialForm" class="space-y-6">
-                    <input type="hidden" id="testimonialIdField">
-                    <input type="hidden" id="testimonialImageUrl">
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Client Name *</label>
-                            <input type="text" id="testimonialName" required class="form-input" placeholder="John Doe">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Company *</label>
-                            <input type="text" id="testimonialCompany" required class="form-input" placeholder="TechFlow Inc.">
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Position *</label>
-                            <input type="text" id="testimonialPosition" required class="form-input" placeholder="CEO">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Rating *</label>
-                            <select id="testimonialRating" required class="form-input">
-                                <option value="5">★★★★★ (5 Stars)</option>
-                                <option value="4">★★★★☆ (4 Stars)</option>
-                                <option value="3">★★★☆☆ (3 Stars)</option>
-                                <option value="2">★★☆☆☆ (2 Stars)</option>
-                                <option value="1">★☆☆☆☆ (1 Star)</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Message *</label>
-                        <textarea id="testimonialMessage" rows="4" required class="form-input" placeholder="Working with this designer was amazing..."></textarea>
-                    </div>
-                    
-                    <div class="flex justify-end gap-4 pt-6 border-t border-gray-200">
-                        <button type="button" onclick="closeTestimonialModal()" class="btn-secondary">
-                            Cancel
-                        </button>
-                        <button type="submit" class="btn-primary">
-                            <i class="fas fa-save"></i> Save Testimonial
-                        </button>
-                    </div>
-                </form>
+    <!-- Testimonial Modal (Standard) -->
+    <div id="testimonialModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeTestimonialModal()"></div>
+        <div class="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden">
+             <div class="p-8 border-b border-gray-100 bg-slate-50/50 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-slate-800" id="testimonialModalTitle">Testimonial</h3>
+                <button onclick="closeTestimonialModal()" class="text-slate-400 hover:text-rose-500 text-xl"><i class="fas fa-times"></i></button>
             </div>
+            <form id="testimonialForm" class="p-8 space-y-4">
+                <input type="hidden" id="testimonialIdField">
+                <input type="text" id="testimonialName" required class="w-full p-3 rounded-xl modern-input" placeholder="Client Name">
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" id="testimonialCompany" required class="w-full p-3 rounded-xl modern-input" placeholder="Company">
+                    <select id="testimonialRating" class="w-full p-3 rounded-xl modern-input bg-white">
+                        <option value="5">5 Stars</option>
+                        <option value="4">4 Stars</option>
+                        <option value="3">3 Stars</option>
+                    </select>
+                </div>
+                <input type="text" id="testimonialPosition" required class="w-full p-3 rounded-xl modern-input" placeholder="Position (e.g. CEO)">
+                <textarea id="testimonialMessage" rows="3" required class="w-full p-3 rounded-xl modern-input" placeholder="Feedback..."></textarea>
+                <div class="pt-2 flex justify-end gap-3">
+                    <button type="button" onclick="closeTestimonialModal()" class="px-6 py-3 rounded-xl text-slate-500 hover:bg-slate-100 font-medium">Cancel</button>
+                    <button type="submit" class="px-6 py-3 rounded-xl bg-sky-500 text-white font-bold hover:bg-sky-600 shadow-lg shadow-sky-500/30">Save</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Script -->
     <script>
-        // ========== FIREBASE CONFIGURATION ==========
-        // Replace with your Firebase configuration
+        // ========== CONFIG & INIT ==========
         const firebaseConfig = {
-    apiKey: "AIzaSyBRX3SmwDnA2hHHDUvRk3-B-b865cH8RMw",
-    authDomain: "portfolio-2131e.firebaseapp.com",
-    projectId: "portfolio-2131e",
-    storageBucket: "portfolio-2131e.firebasestorage.app",
-    messagingSenderId: "609515455390",
-    appId: "1:609515455390:web:5d1b258d9ba394fe3d0c8f"
-  };
-
-        // Initialize Firebase
-        let firebaseApp, db, storage;
-        
-        try {
-            firebaseApp = firebase.initializeApp(firebaseConfig);
-            db = firebase.firestore();
-            storage = firebase.storage();
-            console.log("Firebase initialized successfully");
-        } catch (error) {
-            console.error("Firebase initialization error:", error);
-        }
-
-        // ========== ADMIN CREDENTIALS ==========
-        // You can change these credentials
-        const ADMIN_CREDENTIALS = {
-            username: "admin",
-            password: "admin123" // Change this to your preferred password
+            apiKey: "AIzaSyBRX3SmwDnA2hHHDUvRk3-B-b865cH8RMw",
+            authDomain: "portfolio-2131e.firebaseapp.com",
+            projectId: "portfolio-2131e",
+            storageBucket: "portfolio-2131e.firebasestorage.app",
+            messagingSenderId: "609515455390",
+            appId: "1:609515455390:web:5d1b258d9ba394fe3d0c8f"
         };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const ADMIN_USER = "admin";
+        const ADMIN_PASS = "admin123";
 
-        // ========== STATE MANAGEMENT ==========
+        // State
         let editingProjectId = null;
         let editingSkillId = null;
         let editingTestimonialId = null;
-        let projectImageFile = null;
-        let customIconFile = null;
-        let isLoggedIn = false;
+        let chartInstance = null; // Store chart instance
 
-        // ========== UI FUNCTIONS ==========
-        function showNotification(message, type = 'success') {
-            const notification = document.getElementById('notification');
-            const notificationText = document.getElementById('notification-text');
+        // ========== CORE UI LOGIC ==========
+        function showNotification(msg, type='success') {
+            const el = document.getElementById('notification');
+            const text = document.getElementById('notification-text');
+            const iconContainer = el.querySelector('div');
             
-            notificationText.textContent = message;
-            notification.className = `notification ${type} show`;
+            text.textContent = msg;
             
-            // Set icon based on type
-            const icon = notification.querySelector('i');
-            if (type === 'success') {
-                icon.className = 'fas fa-check-circle';
-            } else if (type === 'error') {
-                icon.className = 'fas fa-exclamation-circle';
+            // Colors
+            el.className = `toast fixed top-6 right-6 z-50 flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl glass-panel border-l-4 show`;
+            if(type === 'success') {
+                el.classList.add('border-teal-500');
+                iconContainer.className = 'w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-teal-600';
+                iconContainer.innerHTML = '<i class="fas fa-check"></i>';
             } else {
-                icon.className = 'fas fa-info-circle';
+                el.classList.add('border-rose-500');
+                iconContainer.className = 'w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600';
+                iconContainer.innerHTML = '<i class="fas fa-exclamation"></i>';
             }
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 4000);
+
+            setTimeout(() => el.classList.remove('show'), 3000);
         }
 
-        function showTab(tabId) {
-            // Update page title based on tab
-            const titles = {
-                'dashboardTab': 'Dashboard Overview',
-                'projectsTab': 'Manage Projects',
-                'skillsTab': 'Manage Skills',
-                'testimonialsTab': 'Manage Testimonials',
-                'messagesTab': 'Contact Messages'
-            };
-            
-            const subtitles = {
-                'dashboardTab': 'Welcome back! Here\'s what\'s happening with your portfolio.',
-                'projectsTab': 'Add, edit, or remove portfolio projects',
-                'skillsTab': 'Update your technical skills and design tools',
-                'testimonialsTab': 'Client reviews and testimonials',
-                'messagesTab': 'Manage incoming messages from the contact form'
-            };
-            
-            document.getElementById('pageTitle').textContent = titles[tabId];
-            document.getElementById('pageSubtitle').textContent = subtitles[tabId];
-            
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Source copied to clipboard!');
+            }).catch(err => {
+                showNotification('Failed to copy', 'error');
             });
-            
-            // Remove active class from all nav buttons
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('nav-active');
-            });
-            
-            // Show selected tab
-            document.getElementById(tabId).classList.add('active');
-            
-            // Add active class to clicked button
-            event.target.classList.add('nav-active');
-            
-            // Load data for the tab if needed
-            switch(tabId) {
-                case 'projectsTab':
-                    loadProjects();
-                    break;
-                case 'skillsTab':
-                    loadSkills();
-                    break;
-                case 'testimonialsTab':
-                    loadTestimonials();
-                    break;
-                case 'messagesTab':
-                    loadMessages();
-                    break;
-                case 'dashboardTab':
-                    loadDashboardStats();
-                    break;
-            }
-        }
-
-        function refreshData() {
-            const currentTab = document.querySelector('.tab-content.active').id;
-            showNotification('Refreshing data...', 'info');
-            
-            switch(currentTab) {
-                case 'dashboardTab':
-                    loadDashboardStats();
-                    break;
-                case 'projectsTab':
-                    loadProjects();
-                    break;
-                case 'skillsTab':
-                    loadSkills();
-                    break;
-                case 'testimonialsTab':
-                    loadTestimonials();
-                    break;
-                case 'messagesTab':
-                    loadMessages();
-                    break;
-            }
         }
 
         // ========== AUTHENTICATION ==========
-        function checkLogin() {
-            const savedLogin = localStorage.getItem('portfolioAdminLoggedIn');
-            if (savedLogin === 'true') {
-                isLoggedIn = true;
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('dashboard').classList.remove('hidden');
-                document.getElementById('usernameDisplay').textContent = localStorage.getItem('portfolioAdminUsername') || 'Admin';
-                loadDashboardStats();
-            }
-        }
-
         document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            // Check credentials
-            if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
-                isLoggedIn = true;
-                localStorage.setItem('portfolioAdminLoggedIn', 'true');
-                localStorage.setItem('portfolioAdminUsername', username);
-                
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('dashboard').classList.remove('hidden');
-                document.getElementById('usernameDisplay').textContent = username;
-                
-                showNotification('Login successful! Welcome to the admin panel.', 'success');
-                loadDashboardStats();
+            const u = document.getElementById('loginUsername').value;
+            const p = document.getElementById('loginPassword').value;
+
+            if(u === ADMIN_USER && p === ADMIN_PASS) {
+                localStorage.setItem('auth', 'true');
+                initDashboard();
             } else {
-                showNotification('Invalid username or password. Please try again.', 'error');
+                showNotification('Invalid credentials', 'error');
             }
         });
 
         function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                isLoggedIn = false;
-                localStorage.removeItem('portfolioAdminLoggedIn');
-                localStorage.removeItem('portfolioAdminUsername');
-                
-                document.getElementById('loginScreen').classList.remove('hidden');
-                document.getElementById('dashboard').classList.add('hidden');
-                document.getElementById('loginForm').reset();
-                
-                showNotification('Logged out successfully', 'info');
+            if(confirm('Log out?')) {
+                localStorage.removeItem('auth');
+                location.reload();
             }
         }
 
-        // ========== PROJECT MANAGEMENT (Updated with Live Link and Image Upload) ==========
+        function initDashboard() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('flex');
+            loadDashboardStats();
+        }
+
+        // Check Auth on Load
+        if(localStorage.getItem('auth') === 'true') initDashboard();
+
+        // ========== NAVIGATION ==========
+        function showTab(id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            
+            // Update Nav State
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            // Load specific data
+            if(id === 'projectsTab') loadProjects();
+            if(id === 'skillsTab') loadSkills();
+            if(id === 'testimonialsTab') loadTestimonials();
+            if(id === 'messagesTab') loadMessages();
+            if(id === 'dashboardTab') loadDashboardStats();
+        }
+
+        function refreshData() {
+            const activeTab = document.querySelector('.tab-content:not(.hidden)').id;
+            showTab(activeTab); // Reloads data
+            showNotification('Data refreshed');
+        }
+
+        // ========== DATA LOADING & RENDERING ==========
+
+        // --- DASHBOARD STATS & CHART ---
+        async function loadDashboardStats() {
+            const p = await db.collection("projects").get();
+            const s = await db.collection("skills").get();
+            const t = await db.collection("testimonials").get();
+            const m = await db.collection("contactMessages").get();
+            
+            document.getElementById('totalProjects').textContent = p.size;
+            document.getElementById('totalSkills').textContent = s.size;
+            document.getElementById('totalTestimonials').textContent = t.size;
+            document.getElementById('totalMessages').textContent = m.size;
+
+            // Load recent messages for list
+            const rMsg = await db.collection("contactMessages").orderBy("timestamp", "desc").limit(3).get();
+            const msgContainer = document.getElementById('recentMessages');
+            msgContainer.innerHTML = '';
+            
+            if(rMsg.empty) {
+                msgContainer.innerHTML = `<p class="text-slate-400 text-sm">No messages yet.</p>`;
+            }
+
+            rMsg.forEach(doc => {
+                const d = doc.data();
+                msgContainer.innerHTML += `
+                    <div class="flex items-start gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                        <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold">${d.name.charAt(0)}</div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-start">
+                                <p class="font-bold text-sm text-slate-800">${d.name}</p>
+                                <span class="text-xs text-slate-400">${d.timestamp ? new Date(d.timestamp.toDate()).toLocaleDateString() : ''}</span>
+                            </div>
+                            <p class="text-xs text-slate-500 truncate">${d.subject}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // --- CHART GENERATION ---
+            // Process timestamps to group by month (last 6 months)
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const today = new Date();
+            const last6Months = [];
+            const messageCounts = [0, 0, 0, 0, 0, 0];
+
+            for (let i = 5; i >= 0; i--) {
+                const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+                last6Months.push(months[d.getMonth()]);
+            }
+
+            m.forEach(doc => {
+                const data = doc.data();
+                if (data.timestamp) {
+                    const msgDate = data.timestamp.toDate();
+                    // Basic Check: is within last 6 months?
+                    const diffMonths = (today.getFullYear() - msgDate.getFullYear()) * 12 + (today.getMonth() - msgDate.getMonth());
+                    if (diffMonths >= 0 && diffMonths < 6) {
+                        messageCounts[5 - diffMonths]++;
+                    }
+                }
+            });
+
+            // Fallback mock data if empty (to show graph visually)
+            const displayData = m.size > 0 ? messageCounts : [12, 19, 3, 5, 2, 3]; 
+
+            const ctx = document.getElementById('activityChart').getContext('2d');
+            
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            // Gradient (Cyan/Blue)
+            let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(6, 182, 212, 0.5)'); // Cyan-500
+            gradient.addColorStop(1, 'rgba(6, 182, 212, 0.05)');
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: last6Months,
+                    datasets: [{
+                        label: 'Inquiries',
+                        data: displayData,
+                        borderColor: '#06b6d4',
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#06b6d4',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                            titleColor: '#1e293b',
+                            bodyColor: '#475569',
+                            borderColor: '#e2e8f0',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false,
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: { font: { family: "'Outfit', sans-serif" } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: "'Outfit', sans-serif" } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- PROJECTS ---
         async function loadProjects() {
-            try {
-                const querySnapshot = await db.collection("projects").orderBy("order", "asc").get();
-                const table = document.getElementById('projectsTable');
-                table.innerHTML = '';
-                
-                if (querySnapshot.empty) {
-                    table.innerHTML = `
-                        <tr>
-                            <td colspan="5" class="text-center py-8 text-gray-500">
-                                <div class="empty-state">
-                                    <i class="fas fa-briefcase"></i>
-                                    <p>No projects found. Add your first project!</p>
+            const snap = await db.collection("projects").orderBy("order").get();
+            const tbody = document.getElementById('projectsTable');
+            tbody.innerHTML = '';
+
+            snap.forEach(doc => {
+                const d = doc.data();
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition-colors group">
+                        <td class="p-6">
+                            <div class="flex items-center gap-4">
+                                <img src="${d.imageUrl}" class="w-16 h-12 object-cover rounded-lg shadow-sm bg-gray-200">
+                                <div>
+                                    <p class="font-bold text-slate-800">${d.title}</p>
+                                    <a href="${d.link}" target="_blank" class="text-xs text-blue-500 hover:underline">View Live</a>
                                 </div>
-                            </td>
-                        </tr>
+                            </div>
+                        </td>
+                        <td class="p-6">
+                            <div class="flex flex-wrap gap-1">
+                                ${d.technologies.split(',').map(t => `<span class="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md border border-slate-200">${t.trim()}</span>`).join('')}
+                            </div>
+                        </td>
+                        <td class="p-6">
+                            ${d.featured ? '<span class="px-3 py-1 bg-cyan-100 text-cyan-600 text-xs rounded-full font-bold">Featured</span>' : '<span class="px-3 py-1 bg-slate-100 text-slate-500 text-xs rounded-full">Standard</span>'}
+                        </td>
+                        <td class="p-6 text-right">
+                            <button onclick="openProjectModal('${doc.id}')" class="w-8 h-8 rounded-lg bg-blue-50 text-blue-500 hover:bg-blue-100 hover:scale-110 transition-transform"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteDoc('projects', '${doc.id}')" class="w-8 h-8 rounded-lg bg-rose-50 text-rose-500 hover:bg-rose-100 hover:scale-110 transition-transform"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // --- SKILLS (With Copy Feature) ---
+        async function loadSkills() {
+            const snap = await db.collection("skills").orderBy("percentage", "desc").get();
+            
+            const techGrid = document.getElementById('techSkillsGrid');
+            const designGrid = document.getElementById('designSkillsGrid');
+            
+            techGrid.innerHTML = '';
+            designGrid.innerHTML = '';
+
+            snap.forEach(doc => {
+                const d = doc.data();
+                // Determine display content (Icon vs Image)
+                const visual = d.isImage 
+                    ? `<img src="${d.icon}" class="w-8 h-8 object-contain">`
+                    : `<i class="${d.icon} text-2xl" style="color: ${d.color || '#4b5563'}"></i>`;
+                
+                const copyValue = d.icon; // The actual class or URL string
+
+                const cardHTML = `
+                    <div class="glass-card p-5 rounded-2xl group relative overflow-hidden">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center shadow-sm">
+                                ${visual}
+                            </div>
+                            <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button onclick="copyToClipboard('${copyValue}')" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 hover:bg-slate-200 text-xs" title="Copy Source Link/Class">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <button onclick="openSkillModal('${doc.id}')" class="w-8 h-8 rounded-lg bg-blue-50 text-blue-500 hover:bg-blue-100 text-xs">
+                                    <i class="fas fa-pen"></i>
+                                </button>
+                                <button onclick="deleteDoc('skills', '${doc.id}')" class="w-8 h-8 rounded-lg bg-rose-50 text-rose-500 hover:bg-rose-100 text-xs">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-lg">${d.name}</h4>
+                        <div class="mt-3">
+                            <div class="flex justify-between text-xs text-slate-500 mb-1">
+                                <span>Proficiency</span>
+                                <span>${d.percentage}%</span>
+                            </div>
+                            <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-teal-400 to-cyan-500" style="width: ${d.percentage}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                if (d.type === 'development') {
+                    techGrid.innerHTML += cardHTML;
+                } else {
+                    designGrid.innerHTML += cardHTML;
+                }
+            });
+
+            // Empty States
+            if (techGrid.innerHTML === '') {
+                techGrid.innerHTML = `<div class="col-span-3 text-center text-slate-300 italic py-8">No technical skills added yet.</div>`;
+            }
+            if (designGrid.innerHTML === '') {
+                designGrid.innerHTML = `<div class="col-span-3 text-center text-slate-300 italic py-8">No design tools added yet.</div>`;
+            }
+        }
+
+        // --- TESTIMONIALS ---
+        async function loadTestimonials() {
+            const snap = await db.collection("testimonials").get();
+            const tbody = document.getElementById('testimonialsTable');
+            tbody.innerHTML = '';
+
+            snap.forEach(doc => {
+                const d = doc.data();
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="p-6">
+                            <p class="font-bold text-slate-800">${d.clientName}</p>
+                            <p class="text-xs text-slate-400">${d.company}</p>
+                        </td>
+                        <td class="p-6">
+                            <p class="text-sm text-slate-600 italic">"${d.message.substring(0,50)}..."</p>
+                        </td>
+                        <td class="p-6 text-amber-400 text-sm">
+                            ${'★'.repeat(d.rating)}${'☆'.repeat(5-d.rating)}
+                        </td>
+                        <td class="p-6 text-right flex justify-end gap-2">
+                            <button onclick="openTestimonialModal('${doc.id}')" class="w-8 h-8 rounded-lg bg-blue-50 text-blue-500 hover:bg-blue-100 hover:scale-110 transition-transform"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteDoc('testimonials', '${doc.id}')" class="w-8 h-8 rounded-lg bg-rose-50 text-rose-500 hover:bg-rose-100 hover:scale-110 transition-transform"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // --- MESSAGES ---
+        async function loadMessages() {
+            const snap = await db.collection("contactMessages").orderBy("timestamp", "desc").get();
+            const list = document.getElementById('messagesList');
+            list.innerHTML = '';
+            
+            let unread = 0;
+
+            snap.forEach(doc => {
+                const d = doc.data();
+                if(!d.read) unread++;
+
+                list.innerHTML += `
+                    <div class="p-6 hover:bg-slate-50 transition-colors flex gap-4 ${!d.read ? 'bg-cyan-50/50' : ''}">
+                        <div class="w-12 h-12 rounded-full ${!d.read ? 'bg-cyan-500 text-white' : 'bg-slate-200 text-slate-500'} flex items-center justify-center font-bold text-lg flex-shrink-0">
+                            ${d.name.charAt(0)}
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between mb-1">
+                                <h4 class="font-bold text-slate-800">${d.name} <span class="text-xs font-normal text-slate-400 ml-2">&lt;${d.email}&gt;</span></h4>
+                                <span class="text-xs text-slate-400">${d.timestamp ? new Date(d.timestamp.toDate()).toLocaleDateString() : ''}</span>
+                            </div>
+                            <p class="font-medium text-sm text-slate-700 mb-1">${d.subject}</p>
+                            <p class="text-sm text-slate-500 leading-relaxed">${d.message}</p>
+                            
+                            <div class="mt-3 flex gap-3">
+                                <a href="mailto:${d.email}" class="text-xs font-bold text-cyan-600 hover:underline">Reply</a>
+                                <button onclick="deleteDoc('contactMessages', '${doc.id}')" class="text-xs font-bold text-rose-500 hover:underline">Delete</button>
+                            </div>
+                        </div>
+                        ${!d.read ? '<div class="w-3 h-3 bg-cyan-500 rounded-full mt-2"></div>' : ''}
+                    </div>
+                `;
+            });
+
+            const dot = document.getElementById('unreadDot');
+            if(unread > 0) {
+                dot.classList.remove('hidden');
+            } else {
+                dot.classList.add('hidden');
+            }
+        }
+
+        async function markAllAsRead() {
+            const batch = db.batch();
+            const snap = await db.collection("contactMessages").where("read", "==", false).get();
+            snap.forEach(doc => {
+                batch.update(doc.ref, { read: true });
+            });
+            await batch.commit();
+            loadMessages();
+            showNotification("Messages marked as read");
+        }
+
+        // --- MESSAGE LOGS ---
+        function openLogsModal() {
+            document.getElementById('messageLogsModal').classList.remove('hidden');
+            document.getElementById('messageLogsModal').classList.add('flex');
+            loadMessageLogs();
+        }
+
+        function closeLogsModal() {
+            document.getElementById('messageLogsModal').classList.add('hidden');
+            document.getElementById('messageLogsModal').classList.remove('flex');
+        }
+
+        async function loadMessageLogs() {
+            const container = document.getElementById('logsList');
+            container.innerHTML = '<p class="text-center text-slate-400 py-4">Loading logs...</p>';
+            
+            try {
+                const snap = await db.collection('messageLogs').orderBy('deletedAt', 'desc').get();
+                container.innerHTML = '';
+
+                if(snap.empty) {
+                    container.innerHTML = `
+                        <div class="text-center py-8">
+                            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-400">
+                                <i class="fas fa-clipboard-check text-2xl"></i>
+                            </div>
+                            <p class="text-slate-500">No deleted messages logged.</p>
+                        </div>
                     `;
                     return;
                 }
-                
-                querySnapshot.forEach((doc) => {
-                    const project = doc.data();
-                    const row = `
-                        <tr>
-                            <td>
-                                <div class="flex items-center gap-4">
-                                    <img src="${project.imageUrl || 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'}" 
-                                         alt="${project.title}" 
-                                         class="w-16 h-12 object-cover rounded-lg">
-                                    <div>
-                                        <p class="font-medium">${project.title}</p>
-                                        <p class="text-sm text-gray-500">${truncate(project.technologies, 30)}</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                ${project.link ? 
-                                    `<a href="${project.link}" target="_blank" class="text-purple-600 hover:text-purple-800 text-sm flex items-center gap-1">
-                                        <i class="fas fa-external-link-alt text-xs"></i> View Live
-                                    </a>` :
-                                    '<span class="text-gray-400 text-sm">No link</span>'
-                                }
-                            </td>
-                            <td>
-                                <div class="flex flex-wrap gap-1">
-                                    ${project.technologies.split(',').map(tech => 
-                                        `<span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">${tech.trim()}</span>`
-                                    ).join('')}
-                                </div>
-                            </td>
-                            <td>
-                                ${project.featured ? 
-                                    '<span class="badge badge-purple">Featured</span>' : 
-                                    '<span class="badge badge-info">Regular</span>'}
-                            </td>
-                            <td>
-                                <div class="flex gap-2">
-                                    <button onclick="editProject('${doc.id}')" 
-                                            class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200 flex items-center justify-center transition-all">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button onclick="deleteProject('${doc.id}')" 
-                                            class="w-8 h-8 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 flex items-center justify-center transition-all">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+
+                snap.forEach(doc => {
+                    const log = doc.data();
+                    const date = log.deletedAt ? new Date(log.deletedAt.toDate()).toLocaleString() : 'Unknown date';
+                    
+                    container.innerHTML += `
+                        <div class="p-4 bg-white rounded-xl border border-slate-100 shadow-sm flex flex-col gap-1">
+                            <div class="flex justify-between items-start">
+                                <span class="font-bold text-slate-800 text-sm">Deleted: "${log.subject}"</span>
+                                <span class="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded">${date}</span>
+                            </div>
+                            <div class="text-xs text-slate-500">
+                                From: <span class="font-medium text-slate-700">${log.originalName}</span> (${log.originalEmail})
+                            </div>
+                            <div class="text-xs text-slate-400 mt-1">
+                                Action by: ${log.deletedBy || 'System'}
+                            </div>
+                        </div>
                     `;
-                    table.innerHTML += row;
                 });
-            } catch (error) {
-                showNotification('Error loading projects: ' + error.message, 'error');
+            } catch (e) {
+                console.error(e);
+                container.innerHTML = '<p class="text-center text-rose-500">Error loading logs.</p>';
             }
         }
 
-        function openProjectModal(projectId = null) {
-            const modal = document.getElementById('projectModal');
-            const title = document.getElementById('projectModalTitle');
-            
-            // Reset image preview
-            document.getElementById('projectImagePreview').innerHTML = '<i class="fas fa-image text-2xl"></i>';
-            document.getElementById('projectImageUrl').value = '';
-            document.getElementById('projectImageFile').value = '';
-            projectImageFile = null;
-            document.getElementById('projectUploadProgress').classList.add('hidden');
-            
-            if (projectId) {
-                title.textContent = 'Edit Project';
-                editingProjectId = projectId;
-                
-                db.collection("projects").doc(projectId).get().then((doc) => {
-                    if (doc.exists) {
-                        const project = doc.data();
-                        document.getElementById('projectIdField').value = projectId;
-                        document.getElementById('projectTitle').value = project.title || '';
-                        document.getElementById('projectTech').value = project.technologies || '';
-                        document.getElementById('projectLink').value = project.link || '';
-                        document.getElementById('projectImageUrl').value = project.imageUrl || '';
-                        document.getElementById('projectOrder').value = project.order || 0;
-                        document.getElementById('projectFeatured').checked = project.featured || false;
-                        document.getElementById('projectDescription').value = project.description || '';
-                        
-                        // Set image preview if exists
-                        if (project.imageUrl) {
-                            updateProjectImagePreview(project.imageUrl);
-                        }
+        // ========== CRUD OPERATIONS ==========
+        
+        async function deleteDoc(coll, id) {
+            if(!confirm("Delete this item?")) return;
+
+            // Log if deleting a message
+            if(coll === 'contactMessages') {
+                try {
+                    const docSnap = await db.collection(coll).doc(id).get();
+                    if(docSnap.exists) {
+                        const data = docSnap.data();
+                        await db.collection('messageLogs').add({
+                            originalName: data.name || 'Unknown',
+                            originalEmail: data.email || 'Unknown',
+                            subject: data.subject || 'No Subject',
+                            deletedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            deletedBy: 'Admin' 
+                        });
                     }
+                } catch(e) {
+                    console.error("Error logging deletion:", e);
+                }
+            }
+
+            await db.collection(coll).doc(id).delete();
+            refreshData();
+            showNotification("Deleted successfully");
+        }
+
+        // --- PROJECT FORM ---
+        function openProjectModal(id=null) {
+            document.getElementById('projectModal').classList.remove('hidden');
+            document.getElementById('projectModal').classList.add('flex');
+            const form = document.getElementById('projectForm');
+            
+            if(id) {
+                editingProjectId = id;
+                db.collection("projects").doc(id).get().then(doc => {
+                    const d = doc.data();
+                    document.getElementById('projectTitle').value = d.title;
+                    document.getElementById('projectOrder').value = d.order;
+                    document.getElementById('projectTech').value = d.technologies;
+                    document.getElementById('projectLink').value = d.link;
+                    document.getElementById('projectImageUrl').value = d.imageUrl;
+                    document.getElementById('pPreview').src = d.imageUrl;
+                    document.getElementById('projectFeatured').checked = d.featured;
+                    document.getElementById('projectModalTitle').innerText = "Edit Project";
                 });
             } else {
-                title.textContent = 'Add New Project';
                 editingProjectId = null;
-                document.getElementById('projectForm').reset();
+                form.reset();
+                document.getElementById('pPreview').src = '';
+                document.getElementById('projectModalTitle').innerText = "New Project";
             }
-            
-            modal.classList.remove('hidden');
         }
 
         function closeProjectModal() {
             document.getElementById('projectModal').classList.add('hidden');
-            editingProjectId = null;
-            projectImageFile = null;
-            document.getElementById('projectForm').reset();
-            
-            // Reset image preview
-            document.getElementById('projectImagePreview').innerHTML = '<i class="fas fa-image text-2xl"></i>';
-            document.getElementById('projectUploadProgress').classList.add('hidden');
-        }
-
-        // Project Image Functions
-        function previewProjectImage(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            // Validate file type
-            if (!file.type.match('image.*')) {
-                showNotification('Please select an image file (JPG, PNG, GIF)', 'error');
-                return;
-            }
-            
-            // Validate file size (max 5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                showNotification('Image size should be less than 5MB', 'error');
-                return;
-            }
-            
-            projectImageFile = file;
-            
-            // Create a temporary URL for the image preview
-            const imageUrl = URL.createObjectURL(file);
-            updateProjectImagePreview(imageUrl);
-            
-            // Clear URL input
-            document.getElementById('projectImageUrl').value = '';
-        }
-
-        function updateProjectImagePreview(url) {
-            const preview = document.getElementById('projectImagePreview');
-            
-            if (url) {
-                preview.innerHTML = `<img src="${url}" alt="Preview">`;
-            } else {
-                preview.innerHTML = '<i class="fas fa-image text-2xl"></i>';
-            }
-        }
-
-        // Upload project image to Firebase Storage
-        async function uploadProjectImage() {
-            if (!projectImageFile) {
-                return document.getElementById('projectImageUrl').value;
-            }
-            
-            try {
-                // Show upload progress
-                document.getElementById('projectUploadProgress').classList.remove('hidden');
-                const uploadPercent = document.getElementById('projectUploadPercent');
-                const uploadBar = document.getElementById('projectUploadBar');
-                
-                // Create a unique filename
-                const timestamp = Date.now();
-                const fileName = `projects/${timestamp}_${projectImageFile.name}`;
-                
-                // Create storage reference
-                const storageRef = storage.ref(fileName);
-                
-                // Upload file
-                const uploadTask = storageRef.put(projectImageFile);
-                
-                // Track upload progress
-                return new Promise((resolve, reject) => {
-                    uploadTask.on('state_changed',
-                        (snapshot) => {
-                            // Update progress
-                            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                            uploadPercent.textContent = Math.round(progress) + '%';
-                            uploadBar.style.width = progress + '%';
-                        },
-                        (error) => {
-                            reject(error);
-                        },
-                        async () => {
-                            // Upload completed successfully
-                            const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-                            showNotification('Project image uploaded successfully!', 'success');
-                            resolve(downloadURL);
-                        }
-                    );
-                });
-            } catch (error) {
-                showNotification('Error uploading image: ' + error.message, 'error');
-                return null;
-            }
+            document.getElementById('projectModal').classList.remove('flex');
         }
 
         document.getElementById('projectForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            // Disable submit button
-            const submitBtn = document.getElementById('projectSubmitBtn');
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<div class="loading"></div> Saving...';
-            
-            try {
-                // Get image URL - either from file upload or URL input
-                let imageUrl = document.getElementById('projectImageUrl').value;
-                
-                // If we have a file to upload
-                if (projectImageFile) {
-                    imageUrl = await uploadProjectImage();
-                    if (!imageUrl) {
-                        throw new Error('Image upload failed');
-                    }
-                }
-                
-                // Validate required fields
-                if (!imageUrl) {
-                    showNotification('Please upload an image or provide an image URL', 'error');
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-save"></i> Save Project';
-                    return;
-                }
-                
-                const projectData = {
-                    title: document.getElementById('projectTitle').value,
-                    technologies: document.getElementById('projectTech').value,
-                    link: document.getElementById('projectLink').value,
-                    imageUrl: imageUrl,
-                    order: parseInt(document.getElementById('projectOrder').value),
-                    featured: document.getElementById('projectFeatured').checked,
-                    description: document.getElementById('projectDescription').value || '',
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
-                
-                if (editingProjectId) {
-                    await db.collection("projects").doc(editingProjectId).update(projectData);
-                    showNotification('Project updated successfully!', 'success');
-                } else {
-                    projectData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                    await db.collection("projects").add(projectData);
-                    showNotification('Project added successfully!', 'success');
-                }
-                
-                closeProjectModal();
-                loadProjects();
-                loadDashboardStats();
-            } catch (error) {
-                showNotification('Error saving project: ' + error.message, 'error');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-save"></i> Save Project';
+            const data = {
+                title: document.getElementById('projectTitle').value,
+                order: parseInt(document.getElementById('projectOrder').value),
+                technologies: document.getElementById('projectTech').value,
+                link: document.getElementById('projectLink').value,
+                imageUrl: document.getElementById('projectImageUrl').value,
+                featured: document.getElementById('projectFeatured').checked
+            };
+
+            const btn = document.getElementById('projectSubmitBtn');
+            btn.innerText = "Saving...";
+
+            if(editingProjectId) {
+                await db.collection("projects").doc(editingProjectId).update(data);
+            } else {
+                await db.collection("projects").add(data);
             }
+
+            btn.innerText = "Save Project";
+            closeProjectModal();
+            loadProjects();
+            loadDashboardStats();
+            showNotification("Project saved");
         });
 
-        async function deleteProject(projectId) {
-            if (confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
-                try {
-                    await db.collection("projects").doc(projectId).delete();
-                    showNotification('Project deleted successfully!', 'success');
-                    loadProjects();
-                    loadDashboardStats();
-                } catch (error) {
-                    showNotification('Error deleting project: ' + error.message, 'error');
-                }
-            }
-        }
+        // --- SKILL FORM (Logic for Icon vs Image URL) ---
+        function openSkillModal(id=null) {
+            document.getElementById('skillModal').classList.remove('hidden');
+            document.getElementById('skillModal').classList.add('flex');
+            const form = document.getElementById('skillForm');
 
-        // ========== SKILL MANAGEMENT (Updated with Custom Icon Upload) ==========
-        function changeIconType(type) {
-            const fontawesomeSection = document.getElementById('fontawesomeSection');
-            const customIconSection = document.getElementById('customIconSection');
-            const iconColorSection = document.getElementById('iconColorSection');
-            document.getElementById('skillIconType').value = type;
-            
-            if (type === 'fontawesome') {
-                fontawesomeSection.style.display = 'block';
-                customIconSection.style.display = 'none';
-                iconColorSection.style.display = 'block';
-                document.getElementById('skillIcon').required = true;
-            } else {
-                fontawesomeSection.style.display = 'none';
-                customIconSection.style.display = 'block';
-                iconColorSection.style.display = 'none';
-                document.getElementById('skillIcon').required = false;
-            }
-        }
-
-        // Live preview for FontAwesome icons
-        document.getElementById('skillIcon').addEventListener('input', function() {
-            const iconClass = this.value;
-            const preview = document.getElementById('iconPreview');
-            
-            // Clear existing classes and add new ones
-            preview.className = '';
-            if (iconClass) {
-                preview.className = iconClass;
-            }
-        });
-
-        // Custom Icon Functions
-        function previewCustomIcon(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            // Validate file type
-            if (!file.type.match('image.*') && !file.name.endsWith('.svg')) {
-                showNotification('Please select an image file (JPG, PNG, SVG)', 'error');
-                return;
-            }
-            
-            // Validate file size (max 2MB)
-            if (file.size > 2 * 1024 * 1024) {
-                showNotification('Icon size should be less than 2MB', 'error');
-                return;
-            }
-            
-            customIconFile = file;
-            
-            // Create a temporary URL for the icon preview
-            const iconUrl = URL.createObjectURL(file);
-            updateCustomIconPreview(iconUrl);
-            
-            // Clear URL input
-            document.getElementById('customIconUrl').value = '';
-        }
-
-        function updateCustomIconPreview(url) {
-            const preview = document.getElementById('customIconPreview');
-            
-            if (url) {
-                preview.innerHTML = `<img src="${url}" alt="Icon Preview">`;
-                document.getElementById('skillCustomIconUrl').value = url;
-            } else {
-                preview.innerHTML = '<i class="fas fa-upload text-2xl"></i>';
-                document.getElementById('skillCustomIconUrl').value = '';
-            }
-        }
-
-        // Upload custom icon to Firebase Storage
-        async function uploadCustomIcon() {
-            if (!customIconFile) {
-                return document.getElementById('skillCustomIconUrl').value;
-            }
-            
-            try {
-                // Show upload progress
-                document.getElementById('iconUploadProgress').classList.remove('hidden');
-                const uploadPercent = document.getElementById('iconUploadPercent');
-                const uploadBar = document.getElementById('iconUploadBar');
-                
-                // Create a unique filename
-                const timestamp = Date.now();
-                const fileName = `icons/${timestamp}_${customIconFile.name}`;
-                
-                // Create storage reference
-                const storageRef = storage.ref(fileName);
-                
-                // Upload file
-                const uploadTask = storageRef.put(customIconFile);
-                
-                // Track upload progress
-                return new Promise((resolve, reject) => {
-                    uploadTask.on('state_changed',
-                        (snapshot) => {
-                            // Update progress
-                            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                            uploadPercent.textContent = Math.round(progress) + '%';
-                            uploadBar.style.width = progress + '%';
-                        },
-                        (error) => {
-                            reject(error);
-                        },
-                        async () => {
-                            // Upload completed successfully
-                            const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-                            showNotification('Icon uploaded successfully!', 'success');
-                            resolve(downloadURL);
-                        }
-                    );
-                });
-            } catch (error) {
-                showNotification('Error uploading icon: ' + error.message, 'error');
-                return null;
-            }
-        }
-
-        async function loadSkills() {
-            try {
-                // Development Skills
-                const devSnapshot = await db.collection("skills").where("type", "==", "development").get();
-                const devContainer = document.getElementById('devSkillsContainer');
-                devContainer.innerHTML = '';
-                
-                if (devSnapshot.empty) {
-                    devContainer.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-code"></i>
-                            <p>No development skills added yet</p>
-                        </div>
-                    `;
-                } else {
-                    devSnapshot.forEach((doc) => {
-                        const skill = doc.data();
-                        devContainer.innerHTML += createSkillCard(doc.id, skill);
-                    });
-                }
-                
-                // Design Skills
-                const designSnapshot = await db.collection("skills").where("type", "==", "design").get();
-                const designContainer = document.getElementById('designSkillsContainer');
-                designContainer.innerHTML = '';
-                
-                if (designSnapshot.empty) {
-                    designContainer.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-paint-brush"></i>
-                            <p>No design skills added yet</p>
-                        </div>
-                    `;
-                } else {
-                    designSnapshot.forEach((doc) => {
-                        const skill = doc.data();
-                        designContainer.innerHTML += createSkillCard(doc.id, skill);
-                    });
-                }
-            } catch (error) {
-                showNotification('Error loading skills: ' + error.message, 'error');
-            }
-        }
-
-        function createSkillCard(id, skill) {
-            // Determine icon display based on icon type
-            let iconHtml = '';
-            if (skill.iconType === 'custom' && skill.customIconUrl) {
-                iconHtml = `<img src="${skill.customIconUrl}" alt="${skill.name}" class="w-8 h-8">`;
-            } else {
-                const iconClass = skill.icon || 'fas fa-code';
-                const iconColor = skill.iconColor || 'text-gray-600';
-                iconHtml = `<i class="${iconClass} ${iconColor} text-lg"></i>`;
-            }
-            
-            return `
-                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-xl hover:border-purple-300 transition-all duration-200">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center">
-                            ${iconHtml}
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-semibold">${skill.name}</h4>
-                            <div class="skill-progress mt-2">
-                                <div class="skill-progress-bar" style="width: ${skill.percentage}%"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <span class="font-bold text-gray-700">${skill.percentage}%</span>
-                        <div class="flex gap-1">
-                            <button onclick="editSkill('${id}')" 
-                                    class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200 flex items-center justify-center transition-all">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button onclick="deleteSkill('${id}')" 
-                                    class="w-8 h-8 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 flex items-center justify-center transition-all">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function openSkillModal(skillId = null) {
-            const modal = document.getElementById('skillModal');
-            
-            // Reset icon previews
-            document.getElementById('customIconPreview').innerHTML = '<i class="fas fa-upload text-2xl"></i>';
-            document.getElementById('customIconUrl').value = '';
-            document.getElementById('customIconFile').value = '';
-            customIconFile = null;
-            document.getElementById('iconUploadProgress').classList.add('hidden');
-            
-            if (skillId) {
-                editingSkillId = skillId;
-                
-                db.collection("skills").doc(skillId).get().then((doc) => {
-                    if (doc.exists) {
-                        const skill = doc.data();
-                        document.getElementById('skillIdField').value = skillId;
-                        document.getElementById('skillName').value = skill.name || '';
-                        document.getElementById('skillPercentage').value = skill.percentage || '';
-                        document.getElementById('skillType').value = skill.type || 'development';
-                        document.getElementById('skillIconColor').value = skill.iconColor || '';
-                        
-                        // Set icon type
-                        const iconType = skill.iconType || 'fontawesome';
-                        changeIconType(iconType);
-                        
-                        // Set radio button
-                        document.querySelector(`input[name="iconType"][value="${iconType}"]`).checked = true;
-                        
-                        if (iconType === 'fontawesome') {
-                            document.getElementById('skillIcon').value = skill.icon || '';
-                            // Update icon preview
-                            const preview = document.getElementById('iconPreview');
-                            preview.className = skill.icon || 'fas fa-question';
-                        } else {
-                            document.getElementById('skillCustomIconUrl').value = skill.customIconUrl || '';
-                            if (skill.customIconUrl) {
-                                updateCustomIconPreview(skill.customIconUrl);
-                                document.getElementById('customIconUrl').value = skill.customIconUrl;
-                            }
-                        }
+            if(id) {
+                editingSkillId = id;
+                db.collection("skills").doc(id).get().then(doc => {
+                    const d = doc.data();
+                    document.getElementById('skillName').value = d.name;
+                    document.getElementById('skillPercentage').value = d.percentage;
+                    document.getElementById('skillType').value = d.type;
+                    
+                    if(d.isImage) {
+                        document.getElementById('skillImageUrl').value = d.icon;
+                        document.getElementById('skillIcon').value = '';
+                        toggleIconInput('image');
+                    } else {
+                        document.getElementById('skillIcon').value = d.icon;
+                        document.getElementById('skillImageUrl').value = '';
+                        toggleIconInput('icon');
                     }
                 });
             } else {
                 editingSkillId = null;
-                document.getElementById('skillForm').reset();
-                changeIconType('fontawesome');
-                document.querySelector('input[name="iconType"][value="fontawesome"]').checked = true;
-                
-                // Reset icon preview
-                const preview = document.getElementById('iconPreview');
-                preview.className = 'fas fa-question';
+                form.reset();
+                toggleIconInput('icon');
             }
-            
-            modal.classList.remove('hidden');
+        }
+
+        function toggleIconInput(type) {
+            const preview = document.getElementById('liveIconPreview');
+            if(type === 'image') {
+                const url = document.getElementById('skillImageUrl').value;
+                if(url) {
+                    preview.innerHTML = `<img src="${url}" class="w-full h-full object-contain p-1">`;
+                } else {
+                    preview.innerHTML = `<i class="fas fa-image"></i>`;
+                }
+            } else {
+                const cls = document.getElementById('skillIcon').value || 'fas fa-cube';
+                preview.innerHTML = `<i class="${cls} text-xl"></i>`;
+            }
         }
 
         function closeSkillModal() {
-            document.getElementById('skillModal').classList.add('hidden');
-            editingSkillId = null;
-            customIconFile = null;
-            document.getElementById('skillForm').reset();
-            
-            // Reset icon previews
-            document.getElementById('customIconPreview').innerHTML = '<i class="fas fa-upload text-2xl"></i>';
-            document.getElementById('iconUploadProgress').classList.add('hidden');
-            
-            // Reset to default icon type
-            changeIconType('fontawesome');
-            document.querySelector('input[name="iconType"][value="fontawesome"]').checked = true;
-            
-            const preview = document.getElementById('iconPreview');
-            preview.className = 'fas fa-question';
+             document.getElementById('skillModal').classList.add('hidden');
+             document.getElementById('skillModal').classList.remove('flex');
         }
 
         document.getElementById('skillForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // Disable submit button
-            const submitBtn = document.getElementById('skillSubmitBtn');
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<div class="loading"></div> Saving...';
-            
-            try {
-                const iconType = document.getElementById('skillIconType').value;
-                let iconData = {};
-                
-                if (iconType === 'fontawesome') {
-                    const icon = document.getElementById('skillIcon').value;
-                    if (!icon) {
-                        showNotification('Please enter a FontAwesome icon class', 'error');
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = '<i class="fas fa-save"></i> Save Skill';
-                        return;
-                    }
-                    
-                    iconData = {
-                        iconType: 'fontawesome',
-                        icon: icon,
-                        iconColor: document.getElementById('skillIconColor').value || ''
-                    };
-                } else {
-                    // Custom icon - either from file upload or URL input
-                    let customIconUrl = document.getElementById('skillCustomIconUrl').value;
-                    
-                    // If we have a file to upload
-                    if (customIconFile) {
-                        customIconUrl = await uploadCustomIcon();
-                        if (!customIconUrl) {
-                            throw new Error('Icon upload failed');
-                        }
-                    }
-                    
-                    // Validate custom icon URL
-                    if (!customIconUrl && !document.getElementById('customIconUrl').value) {
-                        showNotification('Please upload an icon or provide an icon URL', 'error');
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = '<i class="fas fa-save"></i> Save Skill';
-                        return;
-                    }
-                    
-                    // If URL input has value, use that (overrides file upload)
-                    const urlInput = document.getElementById('customIconUrl').value;
-                    if (urlInput) {
-                        customIconUrl = urlInput;
-                    }
-                    
-                    iconData = {
-                        iconType: 'custom',
-                        customIconUrl: customIconUrl
-                    };
-                }
-                
-                const skillData = {
-                    name: document.getElementById('skillName').value,
-                    percentage: parseInt(document.getElementById('skillPercentage').value),
-                    type: document.getElementById('skillType').value,
-                    ...iconData,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
-                
-                if (editingSkillId) {
-                    await db.collection("skills").doc(editingSkillId).update(skillData);
-                    showNotification('Skill updated successfully!', 'success');
-                } else {
-                    skillData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                    await db.collection("skills").add(skillData);
-                    showNotification('Skill added successfully!', 'success');
-                }
-                
-                closeSkillModal();
-                loadSkills();
-                loadDashboardStats();
-            } catch (error) {
-                showNotification('Error saving skill: ' + error.message, 'error');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-save"></i> Save Skill';
+            const iconVal = document.getElementById('skillIcon').value;
+            const imgVal = document.getElementById('skillImageUrl').value;
+            const isImage = !!imgVal;
+
+            const data = {
+                name: document.getElementById('skillName').value,
+                percentage: parseInt(document.getElementById('skillPercentage').value),
+                type: document.getElementById('skillType').value,
+                icon: isImage ? imgVal : iconVal,
+                isImage: isImage
+            };
+
+            if(editingSkillId) {
+                await db.collection("skills").doc(editingSkillId).update(data);
+            } else {
+                await db.collection("skills").add(data);
             }
+
+            closeSkillModal();
+            loadSkills();
+            loadDashboardStats();
+            showNotification("Skill saved");
         });
 
-        async function deleteSkill(skillId) {
-            if (confirm('Are you sure you want to delete this skill?')) {
-                try {
-                    await db.collection("skills").doc(skillId).delete();
-                    showNotification('Skill deleted successfully!', 'success');
-                    loadSkills();
-                    loadDashboardStats();
-                } catch (error) {
-                    showNotification('Error deleting skill: ' + error.message, 'error');
-                }
-            }
-        }
+        // --- TESTIMONIAL FORM ---
+        function openTestimonialModal(id = null) {
+             document.getElementById('testimonialModal').classList.remove('hidden');
+             document.getElementById('testimonialModal').classList.add('flex');
+             const form = document.getElementById('testimonialForm');
+             const title = document.getElementById('testimonialModalTitle');
 
-        // ========== TESTIMONIAL MANAGEMENT ==========
-        async function loadTestimonials() {
-            try {
-                const querySnapshot = await db.collection("testimonials").orderBy("date", "desc").get();
-                const table = document.getElementById('testimonialsTable');
-                table.innerHTML = '';
-                
-                if (querySnapshot.empty) {
-                    table.innerHTML = `
-                        <tr>
-                            <td colspan="5" class="text-center py-8 text-gray-500">
-                                <div class="empty-state">
-                                    <i class="fas fa-comment-dots"></i>
-                                    <p>No testimonials found. Add your first testimonial!</p>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-                
-                querySnapshot.forEach((doc) => {
-                    const testimonial = doc.data();
-                    const date = testimonial.date ? testimonial.date.toDate().toLocaleDateString() : 'N/A';
-                    
-                    const row = `
-                        <tr>
-                            <td>
-                                <div>
-                                    <p class="font-medium">${testimonial.clientName}</p>
-                                    <p class="text-sm text-gray-500">${testimonial.position}</p>
-                                </div>
-                            </td>
-                            <td>
-                                <p class="text-gray-700">${testimonial.company}</p>
-                            </td>
-                            <td>
-                                <div class="flex text-yellow-400">
-                                    ${'★'.repeat(testimonial.rating)}${'☆'.repeat(5 - testimonial.rating)}
-                                </div>
-                            </td>
-                            <td>
-                                <p class="text-sm text-gray-600">${date}</p>
-                            </td>
-                            <td>
-                                <div class="flex gap-2">
-                                    <button onclick="editTestimonial('${doc.id}')" 
-                                            class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200 flex items-center justify-center transition-all">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button onclick="deleteTestimonial('${doc.id}')" 
-                                            class="w-8 h-8 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 flex items-center justify-center transition-all">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                    table.innerHTML += row;
-                });
-            } catch (error) {
-                showNotification('Error loading testimonials: ' + error.message, 'error');
-            }
-        }
-
-        function openTestimonialModal(testimonialId = null) {
-            const modal = document.getElementById('testimonialModal');
-            
-            if (testimonialId) {
-                editingTestimonialId = testimonialId;
-                
-                db.collection("testimonials").doc(testimonialId).get().then((doc) => {
-                    if (doc.exists) {
-                        const testimonial = doc.data();
-                        document.getElementById('testimonialIdField').value = testimonialId;
-                        document.getElementById('testimonialName').value = testimonial.clientName || '';
-                        document.getElementById('testimonialCompany').value = testimonial.company || '';
-                        document.getElementById('testimonialPosition').value = testimonial.position || '';
-                        document.getElementById('testimonialRating').value = testimonial.rating || 5;
-                        document.getElementById('testimonialMessage').value = testimonial.message || '';
-                    }
-                });
-            } else {
-                editingTestimonialId = null;
-                document.getElementById('testimonialForm').reset();
-            }
-            
-            modal.classList.remove('hidden');
+             if(id) {
+                 editingTestimonialId = id;
+                 title.innerText = "Edit Testimonial";
+                 db.collection("testimonials").doc(id).get().then(doc => {
+                     const d = doc.data();
+                     document.getElementById('testimonialName').value = d.clientName;
+                     document.getElementById('testimonialCompany').value = d.company;
+                     document.getElementById('testimonialPosition').value = d.position;
+                     document.getElementById('testimonialRating').value = d.rating;
+                     document.getElementById('testimonialMessage').value = d.message;
+                 });
+             } else {
+                 editingTestimonialId = null;
+                 title.innerText = "New Testimonial";
+                 form.reset();
+             }
         }
 
         function closeTestimonialModal() {
-            document.getElementById('testimonialModal').classList.add('hidden');
-            editingTestimonialId = null;
-            document.getElementById('testimonialForm').reset();
+             document.getElementById('testimonialModal').classList.add('hidden');
+             document.getElementById('testimonialModal').classList.remove('flex');
         }
 
         document.getElementById('testimonialForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const testimonialData = {
+            const data = {
                 clientName: document.getElementById('testimonialName').value,
                 company: document.getElementById('testimonialCompany').value,
                 position: document.getElementById('testimonialPosition').value,
                 rating: parseInt(document.getElementById('testimonialRating').value),
-                message: document.getElementById('testimonialMessage').value,
-                date: firebase.firestore.FieldValue.serverTimestamp(),
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                message: document.getElementById('testimonialMessage').value
             };
             
-            try {
-                if (editingTestimonialId) {
-                    await db.collection("testimonials").doc(editingTestimonialId).update(testimonialData);
-                    showNotification('Testimonial updated successfully!', 'success');
-                } else {
-                    testimonialData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                    await db.collection("testimonials").add(testimonialData);
-                    showNotification('Testimonial added successfully!', 'success');
-                }
-                
-                closeTestimonialModal();
-                loadTestimonials();
-                loadDashboardStats();
-            } catch (error) {
-                showNotification('Error saving testimonial: ' + error.message, 'error');
+            if(editingTestimonialId) {
+                await db.collection("testimonials").doc(editingTestimonialId).update(data);
+                showNotification("Review updated");
+            } else {
+                await db.collection("testimonials").add(data);
+                showNotification("Review added");
             }
-        });
-
-        async function deleteTestimonial(testimonialId) {
-            if (confirm('Are you sure you want to delete this testimonial?')) {
-                try {
-                    await db.collection("testimonials").doc(testimonialId).delete();
-                    showNotification('Testimonial deleted successfully!', 'success');
-                    loadTestimonials();
-                    loadDashboardStats();
-                } catch (error) {
-                    showNotification('Error deleting testimonial: ' + error.message, 'error');
-                }
-            }
-        }
-
-        // ========== MESSAGES MANAGEMENT ==========
-        async function loadMessages() {
-            try {
-                const querySnapshot = await db.collection("contactMessages").orderBy("timestamp", "desc").get();
-                const table = document.getElementById('messagesTable');
-                table.innerHTML = '';
-                
-                let unreadCount = 0;
-                
-                if (querySnapshot.empty) {
-                    table.innerHTML = `
-                        <tr>
-                            <td colspan="6" class="text-center py-8 text-gray-500">
-                                <div class="empty-state">
-                                    <i class="fas fa-envelope-open-text"></i>
-                                    <p>No messages yet</p>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-                
-                querySnapshot.forEach((doc) => {
-                    const message = doc.data();
-                    const date = message.timestamp ? message.timestamp.toDate().toLocaleDateString() : 'N/A';
-                    const time = message.timestamp ? message.timestamp.toDate().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
-                    
-                    if (!message.read) unreadCount++;
-                    
-                    const row = `
-                        <tr>
-                            <td>
-                                <div>
-                                    <p class="font-medium">${message.name}</p>
-                                    <p class="text-sm text-gray-500">${message.email}</p>
-                                </div>
-                            </td>
-                            <td>
-                                <p class="font-medium text-gray-700">${message.subject}</p>
-                            </td>
-                            <td>
-                                <p class="text-gray-600 text-sm" title="${message.message}">${truncate(message.message, 60)}</p>
-                            </td>
-                            <td>
-                                <p class="text-sm text-gray-600">${date}</p>
-                                <p class="text-xs text-gray-500">${time}</p>
-                            </td>
-                            <td>
-                                ${message.read ? 
-                                    '<span class="badge badge-success">Read</span>' : 
-                                    '<span class="badge badge-warning">Unread</span>'}
-                            </td>
-                            <td>
-                                <div class="flex gap-2">
-                                    ${!message.read ? `
-                                        <button onclick="markAsRead('${doc.id}')" 
-                                                class="w-8 h-8 rounded-lg bg-green-100 text-green-600 hover:bg-green-200 flex items-center justify-center transition-all"
-                                                title="Mark as read">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    ` : ''}
-                                    <button onclick="deleteMessage('${doc.id}')" 
-                                            class="w-8 h-8 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 flex items-center justify-center transition-all"
-                                            title="Delete message">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                    table.innerHTML += row;
-                });
-                
-                // Update unread badge
-                const badge = document.getElementById('unreadBadge');
-                if (unreadCount > 0) {
-                    badge.textContent = unreadCount;
-                    badge.classList.remove('hidden');
-                } else {
-                    badge.classList.add('hidden');
-                }
-            } catch (error) {
-                showNotification('Error loading messages: ' + error.message, 'error');
-            }
-        }
-
-        async function loadRecentMessages() {
-            try {
-                const querySnapshot = await db.collection("contactMessages")
-                    .orderBy("timestamp", "desc")
-                    .limit(5)
-                    .get();
-                
-                const container = document.getElementById('recentMessages');
-                container.innerHTML = '';
-                
-                if (querySnapshot.empty) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-envelope-open-text"></i>
-                            <p>No messages yet</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                querySnapshot.forEach((doc) => {
-                    const message = doc.data();
-                    const time = message.timestamp ? message.timestamp.toDate().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
-                    
-                    const messageHTML = `
-                        <div class="flex items-start gap-4 p-4 border border-gray-200 rounded-xl hover:border-purple-300 transition-all duration-200">
-                            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center text-white font-bold">
-                                ${message.name.charAt(0)}
-                            </div>
-                            <div class="flex-1">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <p class="font-medium">${message.name}</p>
-                                        <p class="text-sm text-gray-500">${message.email}</p>
-                                    </div>
-                                    <span class="text-xs text-gray-500">${time}</span>
-                                </div>
-                                <p class="text-gray-600 mt-2">${truncate(message.message, 100)}</p>
-                            </div>
-                        </div>
-                    `;
-                    container.innerHTML += messageHTML;
-                });
-            } catch (error) {
-                console.error("Error loading recent messages:", error);
-            }
-        }
-
-        async function markAsRead(messageId) {
-            try {
-                await db.collection("contactMessages").doc(messageId).update({
-                    read: true,
-                    readAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                showNotification('Message marked as read', 'success');
-                loadMessages();
-                loadRecentMessages();
-                loadDashboardStats();
-            } catch (error) {
-                showNotification('Error updating message: ' + error.message, 'error');
-            }
-        }
-
-        async function markAllAsRead() {
-            try {
-                const querySnapshot = await db.collection("contactMessages").where("read", "==", false).get();
-                const batch = db.batch();
-                
-                querySnapshot.forEach((doc) => {
-                    const ref = db.collection("contactMessages").doc(doc.id);
-                    batch.update(ref, {
-                        read: true,
-                        readAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                });
-                
-                await batch.commit();
-                showNotification('All messages marked as read', 'success');
-                loadMessages();
-                loadRecentMessages();
-                loadDashboardStats();
-            } catch (error) {
-                showNotification('Error marking messages as read: ' + error.message, 'error');
-            }
-        }
-
-        async function deleteMessage(messageId) {
-            if (confirm('Are you sure you want to delete this message?')) {
-                try {
-                    await db.collection("contactMessages").doc(messageId).delete();
-                    showNotification('Message deleted successfully!', 'success');
-                    loadMessages();
-                    loadRecentMessages();
-                    loadDashboardStats();
-                } catch (error) {
-                    showNotification('Error deleting message: ' + error.message, 'error');
-                }
-            }
-        }
-
-        // ========== DASHBOARD STATS ==========
-        async function loadDashboardStats() {
-            try {
-                // Count projects
-                const projectsSnapshot = await db.collection("projects").get();
-                document.getElementById('totalProjects').textContent = projectsSnapshot.size;
-                
-                // Count messages
-                const messagesSnapshot = await db.collection("contactMessages").get();
-                document.getElementById('totalMessages').textContent = messagesSnapshot.size;
-                
-                // Count testimonials
-                const testimonialsSnapshot = await db.collection("testimonials").get();
-                document.getElementById('totalTestimonials').textContent = testimonialsSnapshot.size;
-                
-                // Count skills
-                const skillsSnapshot = await db.collection("skills").get();
-                document.getElementById('totalSkills').textContent = skillsSnapshot.size;
-                
-                // Load recent messages
-                loadRecentMessages();
-            } catch (error) {
-                console.error("Error loading dashboard stats:", error);
-            }
-        }
-
-        // ========== UTILITY FUNCTIONS ==========
-        function truncate(str, length) {
-            return str.length > length ? str.substring(0, length) + '...' : str;
-        }
-
-        function editProject(id) {
-            showTab('projectsTab');
-            setTimeout(() => openProjectModal(id), 100);
-        }
-
-        function editSkill(id) {
-            showTab('skillsTab');
-            setTimeout(() => openSkillModal(id), 100);
-        }
-
-        function editTestimonial(id) {
-            showTab('testimonialsTab');
-            setTimeout(() => openTestimonialModal(id), 100);
-        }
-
-        // ========== MODAL CLOSE HANDLERS ==========
-        document.querySelectorAll('.modal-overlay').forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.add('hidden');
-                }
-            });
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                document.querySelectorAll('.modal-overlay').forEach(modal => {
-                    modal.classList.add('hidden');
-                });
-            }
-        });
-
-        // ========== INITIALIZATION ==========
-        document.addEventListener('DOMContentLoaded', () => {
-            // Check if user is already logged in
-            checkLogin();
             
-            // Setup FontAwesome icon preview
-            const iconInput = document.getElementById('skillIcon');
-            const preview = document.getElementById('iconPreview');
-            iconInput.addEventListener('input', () => {
-                preview.className = iconInput.value || 'fas fa-question';
-            });
+            closeTestimonialModal();
+            loadTestimonials();
+            loadDashboardStats();
         });
+
     </script>
 </body>
 </html>
