@@ -46,6 +46,7 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #39FF14;
         }
+        /* Hide scrollbar for slider but allow functionality */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -131,10 +132,6 @@
                     <a href="#process" class="text-sm font-semibold hover:text-neon transition">Process</a>
                     <a href="#testimonials" class="text-sm font-semibold hover:text-neon transition">Reviews</a>
                     <a href="#contact-form" class="px-6 py-2.5 bg-black text-white text-sm font-bold rounded-full hover:bg-neon hover:text-black transition-all duration-300">Let's Talk</a>
-                    <!-- Admin Link -->
-                    <!-- <a href="admin.html" class="px-6 py-2.5 bg-neon text-black text-sm font-bold rounded-full hover:bg-black hover:text-white transition-all duration-300">
-                        <i class="fas fa-cog mr-2"></i>Admin
-                    </a> -->
                 </div>
 
                 <!-- Mobile menu button -->
@@ -156,7 +153,7 @@
                 <a href="#process" class="block px-3 py-3 text-base font-medium hover:bg-gray-50 hover:text-neon">Process</a>
                 <a href="#testimonials" class="block px-3 py-3 text-base font-medium hover:bg-gray-50 hover:text-neon">Testimonials</a>
                 <a href="#contact-form" class="block px-3 py-3 text-base font-bold text-neon">Let's Talk</a>
-                <a href="admin.html" class="block px-3 py-3 text-base font-bold text-black bg-neon rounded-lg">
+                <a href="admin_dashboard_v2.html" class="block px-3 py-3 text-base font-bold text-black bg-neon rounded-lg mt-4">
                     <i class="fas fa-cog mr-2"></i>Admin Panel
                 </a>
             </div>
@@ -190,12 +187,17 @@
                         I'm an experienced Product Designer with 1.5+ years in the field, collaborating with various companies and startups to build amazing digital products.
                     </p>
                     
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                        <a href="#contact-form" class="px-8 py-4 bg-neon text-black font-bold rounded-full shadow-[0_10px_20px_rgba(57,255,20,0.3)] hover:shadow-none hover:translate-y-1 transition-all duration-300">
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center">
+                        <a href="#projects" class="px-8 py-4 bg-neon text-black font-bold rounded-full shadow-[0_10px_20px_rgba(57,255,20,0.3)] hover:shadow-none hover:translate-y-1 transition-all duration-300">
                             View My Work
                         </a>
                         <a href="#" class="px-8 py-4 border-2 border-gray-200 text-black font-bold rounded-full hover:border-black transition-all duration-300 flex items-center justify-center gap-2">
                             Download CV <i class="fas fa-download text-sm"></i>
+                        </a>
+                        
+                        <!-- WhatsApp Toggle / Button -->
+                        <a href="https://wa.me/911234567890" target="_blank" class="w-14 h-14 bg-white border-2 border-gray-100 rounded-full flex items-center justify-center text-3xl text-[#25D366] shadow-lg hover:scale-110 hover:border-[#25D366] transition-all duration-300" title="Chat on WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
                         </a>
                     </div>
                 </div>
@@ -207,9 +209,9 @@
                     
                     <!-- Main Image with corrected frame -->
                     <div class="relative z-10">
-                        <img src="../assets/images/1038f2eb-e321-4aa4-975e-24295373e362.png" 
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" 
                              alt="Abhisek" 
-                             class="grayscale-img w-[350px] lg:w-[450px] drop-shadow-2xl rounded-[2.5rem] border-4 border-white">
+                             class="grayscale-img w-[350px] lg:w-[450px] drop-shadow-2xl rounded-[2.5rem] border-4 border-white object-cover">
                         
                         <!-- Floating Badges -->
                         <div class="absolute top-20 -left-4 bg-black text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-bounce duration-1000">
@@ -329,7 +331,7 @@
                     <div class="w-[350px] h-[350px] lg:w-[450px] lg:h-[450px] bg-neon rounded-full absolute top-4 lg:right-10 -z-0"></div>
                     
                     <div class="relative z-10">
-                        <img src="../assets/images/1038f2eb-e321-4aa4-975e-24295373e362.png" 
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" 
                              alt="About Abhisek" 
                              class="grayscale-img w-[300px] h-[300px] lg:w-[400px] lg:h-[400px] object-cover rounded-full border-4 border-white shadow-2xl">
                         
@@ -460,7 +462,7 @@
         </div>
     </section>
 
-    <!-- Testimonials Section (Dynamic from Firestore) -->
+    <!-- Testimonials Section (Slider Updated) -->
     <section id="testimonials" class="py-24 bg-gray-50 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
@@ -471,8 +473,20 @@
                 <h2 class="text-4xl md:text-5xl font-extrabold mb-4">What Clients <span class="text-stroke text-black/10">Say</span></h2>
             </div>
 
-            <div id="testimonials-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Testimonials will be loaded dynamically from Firestore -->
+            <div class="relative group">
+                <!-- Navigation Arrows -->
+                <button id="prev-btn" class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 z-20 w-12 h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-lg text-black hover:bg-neon hover:border-neon transition-all opacity-0 group-hover:opacity-100">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                
+                <button id="next-btn" class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 z-20 w-12 h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-lg text-black hover:bg-neon hover:border-neon transition-all opacity-0 group-hover:opacity-100">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+
+                <!-- Slider Container -->
+                <div id="testimonials-container" class="flex gap-8 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar py-8 px-2">
+                    <!-- Testimonials will be loaded dynamically here -->
+                </div>
             </div>
         </div>
     </section>
@@ -560,24 +574,14 @@
 
     <!-- Firebase Configuration and Main Script -->
     <script>
-        // Your Firebase configuration
-        // const firebaseConfig = {
-        //     apiKey: "YOUR_API_KEY",
-        //     authDomain: "YOUR_PROJECT.firebaseapp.com",
-        //     projectId: "YOUR_PROJECT_ID",
-        //     storageBucket: "YOUR_PROJECT.appspot.com",
-        //     messagingSenderId: "YOUR_SENDER_ID",
-        //     appId: "YOUR_APP_ID"
-        // };
-
         const firebaseConfig = {
-    apiKey: "AIzaSyBRX3SmwDnA2hHHDUvRk3-B-b865cH8RMw",
-    authDomain: "portfolio-2131e.firebaseapp.com",
-    projectId: "portfolio-2131e",
-    storageBucket: "portfolio-2131e.firebasestorage.app",
-    messagingSenderId: "609515455390",
-    appId: "1:609515455390:web:5d1b258d9ba394fe3d0c8f"
-  };
+            apiKey: "AIzaSyBRX3SmwDnA2hHHDUvRk3-B-b865cH8RMw",
+            authDomain: "portfolio-2131e.firebaseapp.com",
+            projectId: "portfolio-2131e",
+            storageBucket: "portfolio-2131e.firebasestorage.app",
+            messagingSenderId: "609515455390",
+            appId: "1:609515455390:web:5d1b258d9ba394fe3d0c8f"
+        };
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
@@ -614,7 +618,7 @@
                 querySnapshot.forEach((doc) => {
                     const project = doc.data();
                     const projectHTML = `
-                        <div class="group cursor-pointer ${project.featured ? 'md:translate-y-16' : ''}">
+                        <a href="${project.link || '#'}" target="_blank" class="block group cursor-pointer ${project.featured ? 'md:translate-y-16' : ''}">
                             <div class="relative overflow-hidden rounded-3xl mb-6 bg-white shadow-sm border-4 border-white">
                                 <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex items-center justify-center">
                                     <span class="px-6 py-3 bg-neon text-black font-bold rounded-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">View Project</span>
@@ -632,39 +636,49 @@
                                     <i class="fas fa-arrow-right -rotate-45"></i>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     `;
                     container.innerHTML += projectHTML;
                 });
             });
         }
 
-        // Load Skills from Firestore
+        // Load Skills from Firestore (Modified for Images)
         function loadSkills() {
+            // Helper function to generate skill HTML
+            const createSkillCard = (skill) => {
+                // Check if skill uses an image URL or FontAwesome class
+                let iconElement;
+                if (skill.isImage) {
+                    iconElement = `<img src="${skill.icon}" alt="${skill.name}" class="w-10 h-10 object-contain">`;
+                } else {
+                    iconElement = `<i class="${skill.icon} ${skill.iconColor || 'text-gray-700'}"></i>`;
+                }
+
+                return `
+                    <div class="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-4 hover:-translate-y-1 transition-transform border border-gray-100">
+                        <div class="w-12 h-12 flex items-center justify-center bg-gray-50 rounded-lg text-2xl overflow-hidden">
+                            ${iconElement}
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between mb-1">
+                                <h4 class="font-bold">${skill.name}</h4>
+                                <span class="text-xs font-bold bg-neon/20 px-2 py-0.5 rounded text-black">${skill.percentage}%</span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-1.5">
+                                <div class="bg-neon h-1.5 rounded-full" style="width: ${skill.percentage}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            };
+
             // Development Skills
             db.collection("skills").where("type", "==", "development").get().then((querySnapshot) => {
                 const container = document.getElementById('development-skills');
                 container.innerHTML = '';
-                
                 querySnapshot.forEach((doc) => {
-                    const skill = doc.data();
-                    const skillHTML = `
-                        <div class="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-4 hover:-translate-y-1 transition-transform border border-gray-100">
-                            <div class="w-12 h-12 flex items-center justify-center bg-gray-50 rounded-lg text-2xl">
-                                <i class="${skill.icon} ${skill.iconColor || 'text-gray-700'}"></i>
-                            </div>
-                            <div class="flex-1">
-                                <div class="flex justify-between mb-1">
-                                    <h4 class="font-bold">${skill.name}</h4>
-                                    <span class="text-xs font-bold bg-neon/20 px-2 py-0.5 rounded text-black">${skill.percentage}%</span>
-                                </div>
-                                <div class="w-full bg-gray-100 rounded-full h-1.5">
-                                    <div class="bg-neon h-1.5 rounded-full" style="width: ${skill.percentage}%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    container.innerHTML += skillHTML;
+                    container.innerHTML += createSkillCard(doc.data());
                 });
             });
 
@@ -672,47 +686,32 @@
             db.collection("skills").where("type", "==", "design").get().then((querySnapshot) => {
                 const container = document.getElementById('design-skills');
                 container.innerHTML = '';
-                
                 querySnapshot.forEach((doc) => {
-                    const skill = doc.data();
-                    const skillHTML = `
-                        <div class="bg-white p-6 rounded-2xl shadow-sm flex items-center gap-4 hover:-translate-y-1 transition-transform border border-gray-100">
-                            <div class="w-12 h-12 flex items-center justify-center bg-gray-50 rounded-lg text-2xl">
-                                <i class="${skill.icon} ${skill.iconColor || 'text-gray-700'}"></i>
-                            </div>
-                            <div class="flex-1">
-                                <div class="flex justify-between mb-1">
-                                    <h4 class="font-bold">${skill.name}</h4>
-                                    <span class="text-xs font-bold bg-neon/20 px-2 py-0.5 rounded text-black">${skill.percentage}%</span>
-                                </div>
-                                <div class="w-full bg-gray-100 rounded-full h-1.5">
-                                    <div class="bg-neon h-1.5 rounded-full" style="width: ${skill.percentage}%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    container.innerHTML += skillHTML;
+                    container.innerHTML += createSkillCard(doc.data());
                 });
             });
         }
 
         // Load Testimonials from Firestore
         function loadTestimonials() {
-            db.collection("testimonials").orderBy("date", "desc").limit(6).get().then((querySnapshot) => {
+            db.collection("testimonials").orderBy("date", "desc").limit(10).get().then((querySnapshot) => {
                 const container = document.getElementById('testimonials-container');
                 container.innerHTML = '';
                 
                 querySnapshot.forEach((doc) => {
                     const testimonial = doc.data();
                     const stars = '★'.repeat(testimonial.rating) + '☆'.repeat(5 - testimonial.rating);
+                    // Updated classes for slider Item: snap-center, min-width
                     const testimonialHTML = `
-                        <div class="bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
+                        <div class="snap-center min-w-[100%] md:min-w-[48%] lg:min-w-[32%] bg-white p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
                             <div class="flex text-yellow-400 mb-4">
                                 ${stars.split('').map(star => `<i class="fas fa-star${star === '☆' ? '-o' : ''}"></i>`).join('')}
                             </div>
-                            <p class="text-gray-600 mb-6 italic">"${testimonial.message}"</p>
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-xl font-bold">${testimonial.clientName.charAt(0)}</div>
+                            <p class="text-gray-600 mb-6 italic h-24 overflow-hidden">"${testimonial.message}"</p>
+                            <div class="flex items-center gap-4 mt-auto">
+                                <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-xl font-bold overflow-hidden shrink-0">
+                                    ${testimonial.imageUrl ? `<img src="${testimonial.imageUrl}" class="w-full h-full object-cover">` : testimonial.clientName.charAt(0)}
+                                </div>
                                 <div>
                                     <h5 class="font-bold text-sm">${testimonial.clientName}</h5>
                                     <p class="text-xs text-gray-500">${testimonial.position}, ${testimonial.company}</p>
@@ -724,6 +723,21 @@
                 });
             });
         }
+
+        // Testimonial Slider Navigation
+        const container = document.getElementById('testimonials-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        nextBtn.addEventListener('click', () => {
+            const scrollAmount = container.firstElementChild ? container.firstElementChild.offsetWidth + 32 : 300;
+            container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        });
+
+        prevBtn.addEventListener('click', () => {
+            const scrollAmount = container.firstElementChild ? container.firstElementChild.offsetWidth + 32 : 300;
+            container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        });
 
         // Contact Form Submission
         document.getElementById('contactForm').addEventListener('submit', async (e) => {
